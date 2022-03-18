@@ -1,0 +1,16 @@
+Omer:
+-variable definitions
+-square root
+-comment
+-print, printsep
+
+-documentation, commenting
+
+
+Eren:
+-input
+
+-number operations
+-transpose
+-choose
+-for
