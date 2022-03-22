@@ -1,3 +1,7 @@
 March 22:
 -I took the input from the file given as an argument and separated it to lines.
 -I decided that all variables should be defined as matrices, and created a Matrix struct.
+
+March 23:
+-I added global arrays for terminal symbols and variables. Using these, I am going to separate each input line to a list
+of tokens.
