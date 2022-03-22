@@ -6,6 +6,10 @@ struct Matrix {  // Note that scalars are considered 1 x 1 matrices and vectors 
     int *begin;  // This points to the position (1, 1) of the matrix.
 };
 
+const char *terminals[22] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "}",
+                             "*", "+", "-", "tr", "(", ")", "sqrt", "choose",
+                             "#", "for", "in", ":", "print", "printsep"};
+
 int main(int argc, char *argv[]) {
     FILE *fp;
     char line[256];
