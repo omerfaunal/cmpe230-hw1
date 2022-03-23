@@ -84,3 +84,43 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     return 0;
 }
+
+char* printSep() {
+    return "printf(\"%s\", \"----------\");";
+}
+
+char* printId(char* out, float id) {
+    snprintf(out, 80, "printf(\"%s\", \"%f\")","%f;", id);
+    return out;
+}
+
+char* calculateSqrt(char*out, char* variableName) {
+    snprintf(out, 80, "%s = sqrt(%s);", variableName, variableName);
+    return out;
+}
+
+char* scalarValueDeclaration(char* out, char* variableName, float value) {
+    snprintf(out, 80, "float %s = %f;", variableName, value);
+    return out;
+}
+
+char* scalarValueAssignment(char* out, char* variableName, float value) {
+    snprintf(out, 80, "%s = %f;", variableName, value);
+    return out;
+}
+
+char* OneDVectorDeclaration(char* out, char* variableName, int size) {
+    snprintf(out, 80, "float %s[%d];", variableName, size);
+    return out;
+}
+
+//TODO
+char* OneDVectorAssignment(char* out, char* variableName, int arraySize) {
+    snprintf(out, 256, "for(int i = 0; i < %d; i++) {%s[i] = values[i];}", arraySize, variableName);
+    return out;
+}
+
+char* TwoDVectorDeclaration(char* out, char* variableName, int size1, int size2) {
+    snprintf(out, 80, "float %s[%d][%d];", variableName, size1, size2);
+    return out;
+}
