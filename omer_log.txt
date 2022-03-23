@@ -1,0 +1,5 @@
+March 20
+-I added print functions
+
+March  21
+-I added declaration and assignment functions for scalar and vectors. I didn't yet fully implement vector assignment functions.
