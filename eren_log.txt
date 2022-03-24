@@ -5,3 +5,7 @@ March 22:
 March 23:
 -I added global arrays for terminal symbols and variables. Using these, I am going to separate each input line to a list
 of tokens.
+
+March 24:
+-I worked towards completing the parsing part of the homework. The code can now recognize and separate all symbols
+(keywords, variable names, etc.).
