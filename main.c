@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #define MAX_CHAR 256
 #define MAX_LINE 256
@@ -94,9 +95,8 @@ char* printId(char* out, float id) {
     return out;
 }
 
-char* calculateSqrt(char*out, char* variableName) {
-    snprintf(out, 80, "%s = sqrt(%s);", variableName, variableName);
-    return out;
+float calculateSqrt(float value) {
+    return sqrtf(value);
 }
 
 char* scalarValueDeclaration(char* out, char* variableName, float value) {
@@ -109,18 +109,13 @@ char* scalarValueAssignment(char* out, char* variableName, float value) {
     return out;
 }
 
-char* OneDVectorDeclaration(char* out, char* variableName, int size) {
-    snprintf(out, 80, "float %s[%d];", variableName, size);
+char* OneDVectorDeclaration(char* out, char* variableName, struct Matrix matrix) {
+    snprintf(out, 80, "float %s[%d][%d];", variableName, matrix.row_count, matrix.column_count);
     return out;
 }
 
 //TODO
 char* OneDVectorAssignment(char* out, char* variableName, int arraySize) {
     snprintf(out, 256, "for(int i = 0; i < %d; i++) {%s[i] = values[i];}", arraySize, variableName);
-    return out;
-}
-
-char* TwoDVectorDeclaration(char* out, char* variableName, int size1, int size2) {
-    snprintf(out, 80, "float %s[%d][%d];", variableName, size1, size2);
     return out;
 }
