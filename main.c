@@ -15,7 +15,7 @@ struct Matrix {  // Note that vectors are considered n x 1 matrices.
 
 struct Scalar {
     char *name;
-    int value;
+    float value;
 };
 
 const char *terminals[22] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "}",
@@ -24,11 +24,15 @@ const char *terminals[22] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "
                             // Note that numeric characters and variable names aren't included here.
 
 struct Matrix matrices[MAX_LINE];  // Matrix variables will be stored here.
+struct Matrix* matrixListPointer = matrices; //This is a pointer for traversing matrices list.
 struct Scalar scalars[MAX_LINE];  // Scalar variables will be stored here.
+struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing scalars list.
+
 
 void error(int line);
 
 int main(int argc, char *argv[]) {
+
     FILE *fp;
     char line[MAX_CHAR];
 
@@ -205,35 +209,69 @@ char* printId(char* out, float id) {
     return out;
 }
 
-float calculateSqrt(float value) {
-    return sqrtf(value);
+//Careful! This functions only return the sqrt value and changes the scalar value in this program.
+//After using calculateSqrt function, make sure that you also use scalarValueAssignment function.
+float calculateSqrt(int lineNo, char* variableName) {
+    float value;
+    for(int i = 0; i < 256; i++){
+        struct Scalar currentScalar = scalars[i];
+        if(strcmp(currentScalar.name, variableName) == 0){
+            value = currentScalar.value;
+            if(value < 0){
+                error(lineNo);
+                return -1;
+            }
+            currentScalar.value = sqrtf(value);
+            scalars[i] = currentScalar;
+            return sqrtf(value);
+        }
+    }
+    error(lineNo);
+    return -1;
 }
 
 char* scalarValueDeclaration(char* out, char* variableName, float value) {
     snprintf(out, 80, "float %s = %f;", variableName, value);
+    struct Scalar scalar;
+    scalar.name = variableName;
+    scalar.value = value;
+    *scalarListPointer = scalar;
+    scalarListPointer += 1;
     return out;
 }
 
-char* scalarValueAssignment(char* out, char* variableName, float value) {
+char* scalarValueAssignment(char* out, int lineNo, char* variableName, float value) {
+    for(int i = 0; i < 256; i++){
+        struct Scalar currentScalar = scalars[i];
+        if(strcmp(currentScalar.name, variableName) == 0){
+            currentScalar.value = value;
+            scalars[i] = currentScalar;
+            return out;
+        }
+    }
+    //Gives an error if variable is not declared
+    error(lineNo);
     snprintf(out, 80, "%s = %f;", variableName, value);
     return out;
 }
 
-char* OneDVectorDeclaration(char* out, char* variableName, struct Matrix matrix) {
+char* VectorDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
+    struct Matrix matrix;
+    matrix.name = variableName;
+    matrix.column_count = columnCount;
+    matrix.row_count = rowCount;
     snprintf(out, 80, "float %s[%d][%d];", variableName, matrix.row_count, matrix.column_count);
+    *matrixListPointer = matrix;
+    scalarListPointer += 1;
     return out;
 }
 
 //TODO
-char* OneDVectorAssignment(char* out, char* variableName, int arraySize) {
+char* VectorAssignment(char* out, char* variableName, int arraySize) {
     snprintf(out, 256, "for(int i = 0; i < %d; i++) {%s[i] = values[i];}", arraySize, variableName);
     return out;
 }
 
-char* TwoDVectorDeclaration(char* out, char* variableName, int size1, int size2) {
-    snprintf(out, 80, "float %s[%d][%d];", variableName, size1, size2);
-    return out;
-}
 
 void error(int line) {
     //TODO
