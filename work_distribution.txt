@@ -3,6 +3,7 @@ Omer:
 -square root
 -comment
 -print, printsep
+-choose
 
 -documentation, commenting
 
@@ -12,5 +13,4 @@ Eren:
 
 -number operations
 -transpose
--choose
 -for
