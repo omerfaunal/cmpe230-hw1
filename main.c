@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
 #include <stdlib.h>
 #include "structs.h"
 
@@ -15,8 +14,10 @@ const char *terminals[22] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "
 
 struct Matrix matrices[MAX_LINE];  // Matrix variables will be stored here.
 struct Matrix* matrixListPointer = matrices; //This is a pointer for traversing matrices list.
+short int matrix_count = 0;
 struct Scalar scalars[MAX_LINE];  // Scalar variables will be stored here.
 struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing scalars list.
+short int scalar_count = 0;
 
 void error(int line);
 char* scalarValueDeclaration(char* out, char* variableName, float value);

@@ -7,6 +7,9 @@
 extern struct Scalar scalars[];
 extern struct Scalar* scalarListPointer;
 extern struct Matrix* matrixListPointer;
+extern short int scalar_count;
+extern short int matrix_count;
+extern int line_number;
 
 void error(int line);
 
@@ -17,10 +20,11 @@ char* scalarValueDeclaration(char* out, char* variableName, float value) {
     scalar.value = value;
     *scalarListPointer = scalar;
     scalarListPointer += 1;
+    scalar_count++;
     return out;
 }
 
-char* scalarValueAssignment(char* out, int lineNo, char* variableName, float value) {
+char* scalarValueAssignment(char* out, char* variableName, float value) {
     for(int i = 0; i < 256; i++){
         struct Scalar currentScalar = scalars[i];
         if(strcmp(currentScalar.name, variableName) == 0){
@@ -30,7 +34,7 @@ char* scalarValueAssignment(char* out, int lineNo, char* variableName, float val
         }
     }
     //Gives an error if variable is not declared
-    error(lineNo);
+    error(line_number);
     snprintf(out, 80, "%s = %f;\n", variableName, value);
     return out;
 }
@@ -43,7 +47,8 @@ char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowC
     matrix.row_count = rowCount;
     snprintf(out, MAX_CHAR + 50, "float %s[%d][%d];\n", variableName, matrix.row_count, matrix.column_count);
     *matrixListPointer = matrix;
-    scalarListPointer += 1;
+    matrixListPointer += 1;
+    matrix_count++;
     return out;
 }
 

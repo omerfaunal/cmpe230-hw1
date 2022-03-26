@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include "structs.h"
 
 #define MAX_CHAR 256
 
@@ -8,8 +9,10 @@ char* scalarValueDeclaration(char* out, char* variableName, float value);
 char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount);
 
 extern int line_number;
+extern struct Scalar scalars[];
+extern short int scalar_count;
 
-char* eval(char** line, short int size) {  // Note that size also contains the newline character at the end of the line.
+char* eval(char **line, short int size) {  // Note that size also contains the newline character at the end of the line.
     if(size == 1) {
         return "\n";
     }
@@ -55,5 +58,21 @@ char* eval(char** line, short int size) {  // Note that size also contains the n
         return matrixDeclaration(out, line[1], atoi(line[5]), atoi(line[3]));
     }
 
+    // Scalar assignment
+    for(int i = 0; i < scalar_count; i++) {
+        if(strcmp(line[0], scalars[i].name) == 0) {
+            if(strcmp(line[1], "=") != 0) {
+                error(line_number);
+                return "error";
+            }
+            // TODO: typecheck
+        }
+    }
 
+}
+
+int *typecheck(char **line, short int start_index, short int end_index) {
+    // char **line is the list of tokens of the whole line. int start_index and int end_index specify where the
+    // expression being checked is situated inside the line.
+    // TODO: This should return the dimensions of the expression given as arguments
 }
