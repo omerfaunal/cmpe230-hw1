@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdlib.h>
 
 #define MAX_CHAR 256
 #define MAX_LINE 256
@@ -30,6 +31,7 @@ struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing sc
 
 
 void error(int line);
+char* scalarValueDeclaration(char* out, char* variableName, float value);
 
 int main(int argc, char *argv[]) {
 
@@ -44,6 +46,12 @@ int main(int argc, char *argv[]) {
     fp = fopen(argv[1], "r");
     if(fp == NULL) {
         printf("Cannot open %s\n", argv[1]);
+        return 1;
+    }
+
+    FILE *out_file = fopen("C:\\Users\\Eren\\CLionProjects\\cmpe230-hw1\\out.c", "w");
+    if(out_file == NULL) {
+        printf("Cannot open out.c\n");
         return 1;
     }
 
@@ -98,13 +106,6 @@ int main(int argc, char *argv[]) {
 
                 *pcsepline = ' ';
                 pcsepline++;
-
-                if(scalar_declaration == 1) {
-                    //TODO: Create new scalar variable and add it to the global array.
-                } else {
-                    //TODO: Create new matrix variable and add it to the global array.
-                }
-
 
                 while(pctoken != &token[0]) {
                     pctoken--;
@@ -191,12 +192,29 @@ int main(int argc, char *argv[]) {
             error(line_number);
         }
 
-        printf(sepline);
+        char **final_line = (char**) calloc(MAX_CHAR, sizeof(char*));
+        short int token_ctr = 0;
+        final_line[token_ctr] = strtok(sepline, " ");
+        token_ctr++;
+        char *final_token;
+        while((final_token = strtok(NULL, " ")) != NULL) {
+            final_line[token_ctr] = final_token;
+            token_ctr++;
+        }
+
+        final_line = (char**) realloc(final_line, token_ctr * sizeof(char*));
+
+//        for(int i = 0; i < token_ctr; i++) {
+//            printf(final_line[i]);
+//            printf(" ");
+//        }
+//        printf("\n");
 
         line_number++;
     }
 
     fclose(fp);
+    fclose(out_file);
     return 0;
 }
 
@@ -231,7 +249,7 @@ float calculateSqrt(int lineNo, char* variableName) {
 }
 
 char* scalarValueDeclaration(char* out, char* variableName, float value) {
-    snprintf(out, 80, "float %s = %f;", variableName, value);
+    snprintf(out, MAX_CHAR, "float %s = %f;\n", variableName, value);
     struct Scalar scalar;
     scalar.name = variableName;
     scalar.value = value;
@@ -251,29 +269,29 @@ char* scalarValueAssignment(char* out, int lineNo, char* variableName, float val
     }
     //Gives an error if variable is not declared
     error(lineNo);
-    snprintf(out, 80, "%s = %f;", variableName, value);
+    snprintf(out, 80, "%s = %f;\n", variableName, value);
     return out;
 }
 
-char* VectorDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
+char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
     struct Matrix matrix;
     matrix.name = variableName;
     matrix.column_count = columnCount;
     matrix.row_count = rowCount;
-    snprintf(out, 80, "float %s[%d][%d];", variableName, matrix.row_count, matrix.column_count);
+    snprintf(out, 80, "float %s[%d][%d];\n", variableName, matrix.row_count, matrix.column_count);
     *matrixListPointer = matrix;
     scalarListPointer += 1;
     return out;
 }
 
 //TODO
-char* VectorAssignment(char* out, char* variableName, int arraySize) {
-    snprintf(out, 256, "for(int i = 0; i < %d; i++) {%s[i] = values[i];}", arraySize, variableName);
+char* matrixAssignment(char* out, char* variableName, int arraySize) {
+    snprintf(out, 256, "for(int i = 0; i < %d; i++) {%s[i] = values[i];}\n", arraySize, variableName);
     return out;
 }
 
 
 void error(int line) {
     //TODO
-    printf("Error (Line %d)", line);
+    printf("Error (Line %d)\n", line);
 }
