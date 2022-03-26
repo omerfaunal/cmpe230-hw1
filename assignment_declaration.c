@@ -11,7 +11,7 @@ extern struct Matrix* matrixListPointer;
 void error(int line);
 
 char* scalarValueDeclaration(char* out, char* variableName, float value) {
-    snprintf(out, MAX_CHAR, "float %s = %f;\n", variableName, value);
+    snprintf(out, MAX_CHAR + 50, "float %s = %f;\n", variableName, value);
     struct Scalar scalar;
     scalar.name = variableName;
     scalar.value = value;
@@ -36,11 +36,12 @@ char* scalarValueAssignment(char* out, int lineNo, char* variableName, float val
 }
 
 char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
+    // TODO: Check if dimensions are positive.
     struct Matrix matrix;
     matrix.name = variableName;
     matrix.column_count = columnCount;
     matrix.row_count = rowCount;
-    snprintf(out, 80, "float %s[%d][%d];\n", variableName, matrix.row_count, matrix.column_count);
+    snprintf(out, MAX_CHAR + 50, "float %s[%d][%d];\n", variableName, matrix.row_count, matrix.column_count);
     *matrixListPointer = matrix;
     scalarListPointer += 1;
     return out;
