@@ -9,3 +9,7 @@ of tokens.
 March 24:
 -I worked towards completing the parsing part of the homework. The code can now recognize and separate all symbols
 (keywords, variable names, etc.).
+
+March 26:
+-Completed the syntax check of declarations.
+-Began typechecking.
