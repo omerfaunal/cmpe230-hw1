@@ -36,3 +36,8 @@ float calculateSqrt(int lineNo, char* variableName) {
     error(lineNo);
     return -1;
 }
+
+char* singleForLoop(char* out, char* expr1, char* expr2, char* expr3) {
+    snprintf(out, 256, "for(int i = %s; i < %s; i += %s )", expr1, expr2, expr3);
+    return out;
+}
