@@ -53,8 +53,9 @@ int main(int argc, char *argv[]) {
         char *pcsepline = &sepline[0];
         char token[MAX_CHAR] = {'\0'};
         char *pctoken = &token[0];
-        int is_float = 0;
-        int new_declaration = 0;
+        short int is_float = 0;
+        short int new_declaration = 0;
+        short int for_loop = 0;
         while(*pcline != '\0') {
             // TODO: matrixa must be invalid.
 
@@ -82,8 +83,8 @@ int main(int argc, char *argv[]) {
             *pctoken = *pcline;
             pctoken++;
 
-            // New variable name detection
-            if(new_declaration == 1 &&
+            // New variable name / for loop id detection
+            if((new_declaration == 1 || for_loop == 1) &&
             !(isalpha(*(pcline + 1)) || isdigit(*(pcline + 1)) || *(pcline + 1) == '_')) {
                 if(isdigit(token[0])) {
                     error(line_number);
@@ -104,6 +105,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 new_declaration = 0;
+                if(for_loop == 1 && *(pcline + 1) != ',') {
+                    for_loop = 0;
+                }
                 pcline++;
                 continue;
             }
@@ -118,6 +122,8 @@ int main(int argc, char *argv[]) {
                     matched = 1;
                     if(i <= 2) {
                         new_declaration = 1;
+                    } else if(i == 17) {
+                        for_loop = 1;
                     }
                     *pcsepline = ' ';
                     pcsepline++;
@@ -202,7 +208,7 @@ int main(int argc, char *argv[]) {
         }
 
         final_line = (char**) realloc(final_line, token_ctr * sizeof(char*));
-        fprintf(out_file, eval(final_line, token_ctr));  // TODO: Write eval's return value to out.c
+        fprintf(out_file, eval(final_line, token_ctr));
 //        printf("%d\n", token_ctr);
 
 //        for(int i = 0; i < token_ctr; i++) {

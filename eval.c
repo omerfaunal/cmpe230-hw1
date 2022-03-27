@@ -19,6 +19,9 @@ extern struct Matrix matrices[];
 extern short int scalar_count;
 extern short int matrix_count;
 
+short int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
+                              // 2: There is a double for loop currently open.
+
 char* eval(char **line, short int size) {  // Note that size also contains the newline character at the end of the line.
     if(size == 1) {
         return "\n";
@@ -70,7 +73,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
     if(get_dimensions(line[0], dimensions) != NULL) {
         if(dimensions[0] == 1 && dimensions[1] == 1) {
             // Scalar assignment
-            if (strcmp(line[1], "=") != 0) {
+            if (size < 4 || strcmp(line[1], "=") != 0) {
                 error(line_number);
                 return "error";
             }
@@ -82,8 +85,140 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             } else {
                 error(line_number);
             }
+        } else {
+            // Matrix assignment
+            if (size < 4 || strcmp(line[1], "=") != 0) {
+                error(line_number);
+                return "error";
+            }
+            if(strcmp(line[2], "{") == 0 && strcmp(line[size - 2], "}") == 0) {
+                // Explicit matrix assignment, i.e. all components of a matrix are listed inside curly brackets
+                if(size < 6) {
+                    error(line_number);
+                    return "error";
+                }
+                for(int i = 3; i < size - 2; i++) {
+                    if(!(isdigit((int) line[i][0]) || line[i][0] == '.')) {
+                        error(line_number);
+                        return "error";
+                    }
+                }
+                if(size - 5 != dimensions[0] * dimensions[1]) {
+                    error(line_number);
+                    return "error";
+                }
+                // TODO: Return matrix assignment line
+            }
         }
     }
+
+    if(strcmp(line[0], "for") == 0) {
+        // For loop
+        if(for_loop_open > 0) {
+            error(line_number);
+            return "error";
+        }
+        if(size == 12) {
+            // Single for loop
+            for_loop_open = 1;
+            if(strcmp(line[1], "(") != 0 || strcmp(line[3], "in") != 0 || strcmp(line[5], ":") != 0 ||
+            strcmp(line[7], ":") != 0 || strcmp(line[9], ")") != 0 || strcmp(line[10], "{") != 0) {
+                error(line_number);
+                return "error";
+            }
+
+            int dim[2];
+            for(int token_index = 4; token_index <= 8; token_index += 2) {
+                if (get_dimensions(line[4], dim) == NULL) {
+                    for (int i = 0; i < strlen(line[4]); i++) {
+                        if (!isdigit((int) line[4][i])) {
+                            error(line_number);
+                            return "error";
+                        }
+                    }
+                } else {
+                    if (!(dim[0] == 1 && dim[1] == 1)) {
+                        error(line_number);
+                        return "error";
+                    }
+                }
+            }
+
+            // TODO: Return single for loop beginning line
+
+        } else if(size == 20) {
+            // Double for loop
+            for_loop_open = 2;
+            if(strcmp(line[1], "(") != 0 || strcmp(line[3], ",") != 0 || strcmp(line[5], "in") != 0 ||
+            strcmp(line[7], ":") != 0 || strcmp(line[9], ":") != 0 || strcmp(line[11], ",") != 0 ||
+            strcmp(line[13], ":") != 0 || strcmp(line[15], ":") != 0 || strcmp(line[17], ")") != 0 ||
+            strcmp(line[18], "{") != 0) {
+                error(line_number);
+                return "error";
+            }
+            int dim[2];
+            for(int token_index = 6; token_index <= 16; token_index += 2) {
+                if (get_dimensions(line[4], dim) == NULL) {
+                    for (int i = 0; i < strlen(line[4]); i++) {
+                        if (!isdigit((int) line[4][i])) {
+                            error(line_number);
+                            return "error";
+                        }
+                    }
+                } else {
+                    if (!(dim[0] == 1 && dim[1] == 1)) {
+                        error(line_number);
+                        return "error";
+                    }
+                }
+            }
+
+            // TODO: Return double for loop beginning line
+        } else {
+            error(line_number);
+            return "error";
+        }
+    }
+
+    if(strcmp(line[0], "}") == 0) {
+        // End of for loop
+        if(size != 2) {
+            error(line_number);
+            return "error";
+        }
+        if(for_loop_open == 1) {
+            for_loop_open = 0;
+            return "}";
+        } else if(for_loop_open == 2) {
+            for_loop_open = 0;
+            return "}}";
+        } else{
+            error(line_number);
+            return "error";
+        }
+    }
+
+    if(strcmp(line[0], "print") == 0) {
+        // Print statement
+        // TODO: Argument might be an indexed matrix
+        if(size != 5 || strcmp(line[1], "(") != 0 || strcmp(line[3], ")") != 0) {
+            error(line_number);
+            return "error";
+        }
+        // TODO: Return print statement
+    }
+
+    if(strcmp(line[0], "printsep") == 0) {
+        // Printsep statement
+        if(size != 4 || strcmp(line[1], "(") != 0 || strcmp(line[2], ")") != 0) {
+            error(line_number);
+            return "error";
+        }
+        // TODO: Return printsep statement
+    }
+
+    error(line_number);
+    return "error";
 
 }
 
