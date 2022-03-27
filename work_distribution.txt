@@ -14,3 +14,14 @@ Eren:
 -number operations
 -transpose
 -for
+
+
+
+Yazilacak fonksiyonlar: (aga bu arada return ettigin stringlerin sonuna \n eklemeyi unutma)
+char* single_for_loop(char* expr1, char* expr2, char* expr3);
+char* double_for_loop(char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
+char* assignment(char** tokens, int tokens_size);   // Burda tokens denen sey, stringler listesi. Bu stringlerin
+                                                    // hepsinin yan yana dizilip tek bir string olarak dondurulmesi lazim.
+
+Ayrica, out.c dosyasinin en basina su fonksiyonlarinin tanimlarinin yazilmasi lazim: tr, sqrt, choose (bunlarin
+tanimlari pdf'te var) ve multiply (gerektiginde skaler, gerektiginde matris carpimi yapan bir fonksiyon).
