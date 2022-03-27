@@ -24,18 +24,10 @@ char* scalarValueDeclaration(char* out, char* variableName, float value) {
     return out;
 }
 
-char* scalarValueAssignment(char* out, char* variableName, float value) {
-    for(int i = 0; i < 256; i++){
-        struct Scalar currentScalar = scalars[i];
-        if(strcmp(currentScalar.name, variableName) == 0){
-            currentScalar.value = value;
-            scalars[i] = currentScalar;
-            return out;
-        }
+char* assignment(char* out, char** tokens, int tokens_size) {
+    for(int i = 0; i < tokens_size; i++) {
+        strcat(out, tokens[i]);
     }
-    //Gives an error if variable is not declared
-    error(line_number);
-    snprintf(out, 80, "%s = %f;\n", variableName, value);
     return out;
 }
 

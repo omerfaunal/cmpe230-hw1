@@ -8,3 +8,6 @@ March 25
 -When you define a scalar or matrix, its name and value will be stored in scalars and matrices arrays.
 -Added some debugging to calculateSqrt functions
 -Error detecting for undeclared values
+
+March 27
+- Did a lot of stuff but too lazy to explain

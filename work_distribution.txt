@@ -7,6 +7,11 @@ Omer:
 
 -documentation, commenting
 
+kalanlar:
+-transposes
+-assignment
+- +-* operations
+
 
 Eren:
 -input
