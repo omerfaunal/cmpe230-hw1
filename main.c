@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    FILE *out_file = fopen("C:\\Users\\Eren\\CLionProjects\\cmpe230-hw1\\out.c", "w");
+    FILE *out_file = fopen("..\\out.c", "w");
     if(out_file == NULL) {
         printf("Cannot open out.c\n");
         return 1;
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
         }
 
         final_line = (char**) realloc(final_line, token_ctr * sizeof(char*));
-        eval(final_line, token_ctr);  // TODO: Write eval's return value to out.c
+        fprintf(out_file, eval(final_line, token_ctr));  // TODO: Write eval's return value to out.c
 //        printf("%d\n", token_ctr);
 
 //        for(int i = 0; i < token_ctr; i++) {
