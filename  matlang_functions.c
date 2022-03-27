@@ -38,6 +38,11 @@ float calculateSqrt(int lineNo, char* variableName) {
 }
 
 char* singleForLoop(char* out, char* expr1, char* expr2, char* expr3) {
-    snprintf(out, 256, "for(int i = %s; i < %s; i += %s )", expr1, expr2, expr3);
+    snprintf(out, 256, "for(int i = %s; i < %s; i += %s) {\n", expr1, expr2, expr3);
+    return out;
+}
+
+char* doubleForLoop(char* out, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6) {
+    snprintf(out, 256, "for(int i = %s; i < %s; i += %s ) { \n for(int j = %s; j < %s; j += %s )", expr1, expr2, expr3, expr4, expr5, expr6);
     return out;
 }
