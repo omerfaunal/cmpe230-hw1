@@ -7,9 +7,9 @@
 #define MAX_CHAR 256
 #define MAX_LINE 256
 
-const char *terminals[22] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "}",
+const char *terminals[23] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "}",
                              "*", "+", "-", "tr", "(", ")", "sqrt", "choose",
-                             "#", "for", "in", ":", "printsep", "print"};
+                             "#", "for", "in", ":", "printsep", "print", "="};
                             // Note that numeric characters and variable names aren't included here.
 
 struct Matrix matrices[MAX_LINE];  // Matrix variables will be stored here.
@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
         int is_float = 0;
         int new_declaration = 0;
         while(*pcline != '\0') {
+            // TODO: matrixa must be invalid.
 
             if(*pcline == '\n' || *pcline == '#') {
                 if(pctoken != &token[0]) {
@@ -88,7 +89,7 @@ int main(int argc, char *argv[]) {
                     error(line_number);
                 }
 
-                for(int i = 0; i < 22; i++) {
+                for(int i = 0; i < 23; i++) {
                     if(strcmp(token, terminals[i]) == 0) {
                         error(line_number);
                     }
@@ -110,13 +111,14 @@ int main(int argc, char *argv[]) {
 
             // Keyword detection
             int matched = 0;
-            for(int i = 0; i < 22; i++) {
+            for(int i = 0; i < 23; i++) {
                 if(strcmp(token, terminals[i]) == 0 &&
                 (pctoken - &token[0] == 1 ||
                 !(isalpha(*(pcline + 1)) || isdigit(*(pcline + 1)) || *(pcline + 1) == '_'))) {
                     matched = 1;
-                    new_declaration = 1;
-
+                    if(i <= 2) {
+                        new_declaration = 1;
+                    }
                     *pcsepline = ' ';
                     pcsepline++;
                     while(pctoken != &token[0]) {
@@ -156,8 +158,8 @@ int main(int argc, char *argv[]) {
 
             // Variable detection
             if(!(isalpha(*(pcline + 1)) || isdigit(*(pcline + 1)) || *(pcline + 1) == '_')) {
-                for (int i = 0; i < MAX_LINE; i++) {
-                    if (strcmp(token, matrices[i].name) == 0 || strcmp(token, scalars[i].name) == 0) {
+                for (int i = 0; i < scalar_count; i++) {
+                    if (strcmp(token, scalars[i].name) == 0) {
                         *pcsepline = ' ';
                         pcsepline++;
                         while(pctoken != &token[0]) {
@@ -165,6 +167,19 @@ int main(int argc, char *argv[]) {
                             *pctoken = '\0';
                         }
                         break;
+                    }
+                }
+                if(pctoken != &token[0]) {
+                    for (int i = 0; i < matrix_count; i++) {
+                        if (strcmp(token, matrices[i].name) == 0) {
+                            *pcsepline = ' ';
+                            pcsepline++;
+                            while (pctoken != &token[0]) {
+                                pctoken--;
+                                *pctoken = '\0';
+                            }
+                            break;
+                        }
                     }
                 }
             }

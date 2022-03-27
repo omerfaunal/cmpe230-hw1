@@ -16,7 +16,7 @@ void error(int line);
 char* scalarValueDeclaration(char* out, char* variableName, float value) {
     snprintf(out, MAX_CHAR + 50, "float %s = %f;\n", variableName, value);
     struct Scalar scalar;
-    scalar.name = variableName;
+    scalar.name = strdup(variableName);
     scalar.value = value;
     *scalarListPointer = scalar;
     scalarListPointer += 1;
@@ -42,7 +42,7 @@ char* scalarValueAssignment(char* out, char* variableName, float value) {
 char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
     // TODO: Check if dimensions are positive.
     struct Matrix matrix;
-    matrix.name = variableName;
+    matrix.name = strdup(variableName);
     matrix.column_count = columnCount;
     matrix.row_count = rowCount;
     snprintf(out, MAX_CHAR + 50, "float %s[%d][%d];\n", variableName, matrix.row_count, matrix.column_count);
