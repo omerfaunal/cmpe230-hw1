@@ -11,6 +11,7 @@ char* scalarValueDeclaration(char* out, char* variableName, float value);
 char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount);
 char **rpn(char **line, char **out, short int start_index, short int end_index);
 int *get_dimensions(char *name, int *dimensions);
+int *typecheck(char **line, int size);
 
 extern int line_number;
 extern struct Scalar scalars[];
@@ -31,7 +32,6 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             return "error";
         }
         char out[MAX_CHAR + 50];
-        struct Scalar scalar;
         return scalarValueDeclaration(out, line[1], 0);
     }
 
@@ -68,28 +68,110 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
     int dimensions[2];
     if(get_dimensions(line[0], dimensions) != NULL) {
-        // Scalar assignment
-        if(strcmp(line[1], "=") != 0) {
-            error(line_number);
-            return "error";
+        if(dimensions[0] == 1 && dimensions[1] == 1) {
+            // Scalar assignment
+            if (strcmp(line[1], "=") != 0) {
+                error(line_number);
+                return "error";
+            }
+            char *out[size - 3];
+            int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3);
+            if(rhs_dims[0] == 1 && rhs_dims[1] == 1) {
+                // TODO: When the code reaches here, typechecking should be concluded with no errors, so we should
+                // return the line that will be printed to the .c file.
+            } else {
+                error(line_number);
+            }
         }
-        // TODO: typecheck
-
-//        testing:
-//        char **out = (char**) calloc(size - 3, sizeof(char*));
-//        out = rpn(line, out, 2, size - 2);
-//        for(int i = 0; i < size - 3; i++) {
-//            printf(out[i]); printf(" ");
-//        }
-//        printf("\n");
     }
 
 }
 
-int *typecheck(char **line, short int start_index, short int end_index) {
-    // char **line is the list of tokens of the whole line. int start_index and int end_index specify where the
-    // expression being checked is situated inside the line.
-    // TODO: This should return the dimensions of the expression given as arguments
+int *typecheck(char **line, int size) {
+    // char **line is the list of tokens of the expression in Reverse Polish Notation.
+    // TODO: Matrix indexing
+    int (*stack)[2] = (int(*)[2]) calloc(size, sizeof(int[2]));
+    int (*stack_begin)[2] = stack;
+    for(int i = 0; i < size; i++) {
+        if(strcmp(line[i], "*") == 0) {
+            // Multiplication
+            if(stack - stack_begin < 2) {
+                error(line_number);
+            }
+            stack--; int r2 = (*stack)[0]; int c2 = (*stack)[1];
+            stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+            if(r1 == 1 && c1 == 1) {
+                (*stack)[0] = r2; (*stack)[1] = c2; stack++;
+            } else if(c1 == r2) {
+                (*stack)[0] = r1; (*stack)[1] = c2; stack++;
+            } else {
+                error(line_number);
+            }
+        } else if(strcmp(line[i], "+") == 0 || strcmp(line[i], "-") == 0) {
+            // Addition and subtraction
+            if(stack - stack_begin < 2) {
+                error(line_number);
+            }
+            stack--; int r2 = (*stack)[0]; int c2 = (*stack)[1];
+            stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+            if(r1 == r2 && c1 == c2) {
+                (*stack)[0] = r1; (*stack)[1] = c1; stack++;
+            } else {
+                error(line_number);
+            }
+        } else if(strcmp(line[i], "tr") == 0) {
+            // Transposition
+            if(stack - stack_begin < 1) {
+                error(line_number);
+            }
+            stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+            (*stack)[0] = c1; (*stack)[1] = r1; stack++;
+        } else if(strcmp(line[i], "sqrt") == 0) {
+            // Square root
+            if(stack - stack_begin < 1) {
+                error(line_number);
+            }
+            stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+            if(r1 == 1 && c1 == 1) {
+                (*stack)[0] = r1; (*stack)[1] = c1; stack++;
+            } else {
+                error(line_number);
+            }
+        } else if(strcmp(line[i], "choose") == 0) {
+            // Choose
+            if(stack - stack_begin < 4) {
+                error(line_number);
+            }
+            stack--; int r4 = (*stack)[0]; int c4 = (*stack)[1];
+            stack--; int r3 = (*stack)[0]; int c3 = (*stack)[1];
+            stack--; int r2 = (*stack)[0]; int c2 = (*stack)[1];
+            stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+            if(r1 == 1 && r2 == 1 && r3 == 1 && r4 == 1 && c1 == 1 && c2 == 1 && c3 == 1 && c4 == 1) {
+                (*stack)[0] = 1; (*stack)[1] = 1; stack++;
+            } else {
+                error(line_number);
+            }
+        } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
+            // Number
+            (*stack)[0] = 1; (*stack)[1] = 1; stack++;
+        } else {
+            // Variable
+            int dim[2];
+            if(get_dimensions(line[i], dim) == NULL) {
+                error(line_number);
+            }
+            (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
+        }
+    }
+
+    if(stack - stack_begin != 1) {
+        error(line_number);
+    }
+
+    int *out = (int*) calloc(2, sizeof(int));
+    out[0] = (*stack_begin)[0]; out[1] = (*stack_begin)[1];
+    free(stack);
+    return out;
 
 }
 
