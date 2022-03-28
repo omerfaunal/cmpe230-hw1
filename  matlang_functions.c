@@ -68,5 +68,11 @@ char* callChoose(char* out, char* expr1, char* expr2, char* expr3, char* expr4) 
 
 char* declareSqrtFunction(char* out) {
     snprintf(out, 256, "float sqrt(float value) {return sqrtf(value);}\n");
+    return out;
+}
+
+char* callSqrt(char* out, char* variableName) {
+    snprintf(out, 256, "sqrt(float %s);\n", variableName);
+    return out;
 }
 

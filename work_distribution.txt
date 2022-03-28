@@ -9,7 +9,6 @@ Omer:
 
 kalanlar:
 -transposes
--assignment
 - +-* operations
 
 
