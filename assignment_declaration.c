@@ -31,8 +31,11 @@ char* assignment(char* out, char** tokens, int tokens_size) {
     return out;
 }
 
-char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
-    // TODO: Check if dimensions are positive.
+char* matrixDeclaration(char* out, int lineNo, char* variableName, int columnCount, int rowCount) {
+    if(columnCount < 0 || rowCount < 0){
+        error(lineNo);
+        return out;
+    }
     struct Matrix matrix;
     matrix.name = strdup(variableName);
     matrix.column_count = columnCount;
