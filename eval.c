@@ -11,7 +11,12 @@ char* scalarValueDeclaration(char* out, char* variableName, float value);
 char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount);
 char **rpn(char **line, char **out, short int start_index, short int end_index);
 int *get_dimensions(char *name, int *dimensions);
-int *typecheck(char **line, int size);
+int *typecheck(char **line, int size, char **ptranslated);
+char* matrixAssignment(char* out, char* variableName, int arraySize);
+char* singleForLoop(char* out, char* expr1, char* expr2, char* expr3);
+char* doubleForLoop(char* out, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
+char* printId(char* out, float id);
+char* printSep();
 
 extern int line_number;
 extern struct Scalar scalars[];
@@ -50,7 +55,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             return "error";
         }
         char out[MAX_CHAR + 50];
-        return matrixDeclaration(out, line[1], 1, atoi(line[3]));
+        int row_count = atoi(line[3]);
+        return matrixDeclaration(out, line[1], 1, row_count);
     }
 
     // Matrix declaration
@@ -78,10 +84,12 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 return "error";
             }
             char *out[size - 3];
-            int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3);
+            char* translated = NULL;
+            int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
             if(rhs_dims[0] == 1 && rhs_dims[1] == 1) {
-                // TODO: When the code reaches here, typechecking should be concluded with no errors, so we should
-                // return the line that will be printed to the .c file.
+                char *final_line = (char*) calloc(512, sizeof(char));
+                snprintf(final_line, 512, "%s = %s;\n", line[0], translated);
+                return final_line;
             } else {
                 error(line_number);
             }
@@ -107,7 +115,22 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                     error(line_number);
                     return "error";
                 }
-                // TODO: Return matrix assignment line
+                char *final_line = (char*) calloc(512, sizeof(char));
+                // TODO: Looks like this function isn't working:
+                return matrixAssignment(final_line, line[0], dimensions[0] * dimensions[1]);
+
+            } else {
+                // Non-explicit matrix assignment
+                char *out[size - 3];
+                char* translated = NULL;
+                int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
+                if(rhs_dims[0] == dimensions[0] && rhs_dims[1] == dimensions[1]) {
+                    char *final_line = (char*) calloc(512, sizeof(char));
+                    snprintf(final_line, 512, "%s = %s", line[0], translated);
+                    return final_line;
+                } else {
+                    error(line_number);
+                }
             }
         }
     }
@@ -129,9 +152,9 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
             int dim[2];
             for(int token_index = 4; token_index <= 8; token_index += 2) {
-                if (get_dimensions(line[4], dim) == NULL) {
-                    for (int i = 0; i < strlen(line[4]); i++) {
-                        if (!isdigit((int) line[4][i])) {
+                if (get_dimensions(line[token_index], dim) == NULL) {
+                    for (int i = 0; i < strlen(line[token_index]); i++) {
+                        if (!isdigit((int) line[token_index][i])) {
                             error(line_number);
                             return "error";
                         }
@@ -144,7 +167,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 }
             }
 
-            // TODO: Return single for loop beginning line
+            char *final_line = (char*) calloc(512, sizeof(char));
+            return singleForLoop(final_line, line[4], line[6], line[8]);
 
         } else if(size == 20) {
             // Double for loop
@@ -158,9 +182,9 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             }
             int dim[2];
             for(int token_index = 6; token_index <= 16; token_index += 2) {
-                if (get_dimensions(line[4], dim) == NULL) {
-                    for (int i = 0; i < strlen(line[4]); i++) {
-                        if (!isdigit((int) line[4][i])) {
+                if (get_dimensions(line[token_index], dim) == NULL) {
+                    for (int i = 0; i < strlen(line[token_index]); i++) {
+                        if (!isdigit((int) line[token_index][i])) {
                             error(line_number);
                             return "error";
                         }
@@ -173,7 +197,9 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 }
             }
 
-            // TODO: Return double for loop beginning line
+            char *final_line = (char*) calloc(512, sizeof(char));
+            return doubleForLoop(final_line, line[6], line[8], line[10], line[12], line[14], line[16]);
+
         } else {
             error(line_number);
             return "error";
@@ -205,7 +231,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             error(line_number);
             return "error";
         }
-        // TODO: Return print statement
+
+        return printId(line[2], 0);  // TODO: What is 'float id' in this function? I don't understand
     }
 
     if(strcmp(line[0], "printsep") == 0) {
@@ -214,7 +241,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             error(line_number);
             return "error";
         }
-        // TODO: Return printsep statement
+        return printSep();
     }
 
     error(line_number);
@@ -222,11 +249,16 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
 }
 
-int *typecheck(char **line, int size) {
+int *typecheck(char **line, int size, char **ptranslated) {
+    // This function translates a given expression from Matlang to C. During translation, it also does typechecking.
+    // If a type error is encountered, the error() function is called and translation stops. Otherwise, the translated
+    // expression is stored in char *translated.
     // char **line is the list of tokens of the expression in Reverse Polish Notation.
     // TODO: Matrix indexing
     int (*stack)[2] = (int(*)[2]) calloc(size, sizeof(int[2]));
     int (*stack_begin)[2] = stack;
+    char **expr_stack = (char**) calloc(size, sizeof(char*));
+    char **expr_stack_begin = expr_stack;
     for(int i = 0; i < size; i++) {
         if(strcmp(line[i], "*") == 0) {
             // Multiplication
@@ -242,6 +274,11 @@ int *typecheck(char **line, int size) {
             } else {
                 error(line_number);
             }
+            expr_stack--; char* expr2 = *expr_stack;
+            expr_stack--; char* expr1 = *expr_stack;
+            snprintf(*expr_stack, 512, "multiply(%s, %s)", expr1, expr2);
+            expr_stack++;
+
         } else if(strcmp(line[i], "+") == 0 || strcmp(line[i], "-") == 0) {
             // Addition and subtraction
             if(stack - stack_begin < 2) {
@@ -254,6 +291,17 @@ int *typecheck(char **line, int size) {
             } else {
                 error(line_number);
             }
+            expr_stack--; char* expr2 = *expr_stack;
+            expr_stack--; char* expr1 = *expr_stack;
+            if(strcmp(line[i], "+") == 0) {
+                // Addition
+                snprintf(*expr_stack, 512, "add(%s, %s)", expr1, expr2);
+            } else {
+                // Subtraction
+                snprintf(*expr_stack, 512, "subtract(%s, %s)", expr1, expr2);
+            }
+            expr_stack++;
+
         } else if(strcmp(line[i], "tr") == 0) {
             // Transposition
             if(stack - stack_begin < 1) {
@@ -261,6 +309,10 @@ int *typecheck(char **line, int size) {
             }
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
             (*stack)[0] = c1; (*stack)[1] = r1; stack++;
+            expr_stack--; char* expr = *expr_stack;
+            snprintf(*expr_stack, 512, "transpose(%s)", expr);
+            expr_stack++;
+
         } else if(strcmp(line[i], "sqrt") == 0) {
             // Square root
             if(stack - stack_begin < 1) {
@@ -272,6 +324,10 @@ int *typecheck(char **line, int size) {
             } else {
                 error(line_number);
             }
+            expr_stack--; char* expr = *expr_stack;
+            snprintf(*expr_stack, 512, "sqrt(%s)", expr);
+            expr_stack++;
+
         } else if(strcmp(line[i], "choose") == 0) {
             // Choose
             if(stack - stack_begin < 4) {
@@ -286,9 +342,17 @@ int *typecheck(char **line, int size) {
             } else {
                 error(line_number);
             }
+            expr_stack--; char* expr4 = *expr_stack;
+            expr_stack--; char* expr3 = *expr_stack;
+            expr_stack--; char* expr2 = *expr_stack;
+            expr_stack--; char* expr1 = *expr_stack;
+            snprintf(*expr_stack, 512, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
+            expr_stack++;
+
         } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
             // Number
             (*stack)[0] = 1; (*stack)[1] = 1; stack++;
+            *expr_stack = line[i]; expr_stack++;
         } else {
             // Variable
             int dim[2];
@@ -296,6 +360,7 @@ int *typecheck(char **line, int size) {
                 error(line_number);
             }
             (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
+            *expr_stack = line[i]; expr_stack++;
         }
     }
 
@@ -305,9 +370,10 @@ int *typecheck(char **line, int size) {
 
     int *out = (int*) calloc(2, sizeof(int));
     out[0] = (*stack_begin)[0]; out[1] = (*stack_begin)[1];
-    free(stack);
+    free(stack_begin);
+    *ptranslated = strdup(*expr_stack_begin);
+    free(expr_stack_begin);
     return out;
-
 }
 
 int *get_dimensions(char *name, int *dimensions) {

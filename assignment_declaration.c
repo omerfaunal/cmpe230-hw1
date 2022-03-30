@@ -31,9 +31,9 @@ char* assignment(char* out, char** tokens, int tokens_size) {
     return out;
 }
 
-char* matrixDeclaration(char* out, int lineNo, char* variableName, int columnCount, int rowCount) {
+char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
     if(columnCount < 0 || rowCount < 0){
-        error(lineNo);
+        error(line_number);
         return out;
     }
     struct Matrix matrix;

@@ -209,8 +209,8 @@ int main(int argc, char *argv[]) {
 
         final_line = (char**) realloc(final_line, token_ctr * sizeof(char*));
         fprintf(out_file, eval(final_line, token_ctr));
-//        printf("%d\n", token_ctr);
 
+        // Testing:
 //        for(int i = 0; i < token_ctr; i++) {
 //            printf(final_line[i]);
 //            printf(" ");
