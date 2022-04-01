@@ -362,8 +362,14 @@ int *typecheck(char **line, int size, char **ptranslated) {
             if(get_dimensions(line[i], dim) == NULL) {
                 error(line_number);
             }
-            (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
-            *expr_stack = line[i]; expr_stack++;
+
+            if(expr_stack > expr_stack_begin && strcmp(*(expr_stack - 1), "]") == 0) {
+                // TODO: Matrix indexing
+            }
+            else {
+                (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
+                *expr_stack = line[i]; expr_stack++;
+            }
         }
     }
 
