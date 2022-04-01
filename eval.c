@@ -362,8 +362,14 @@ int *typecheck(char **line, int size, char **ptranslated) {
             if(get_dimensions(line[i], dim) == NULL) {
                 error(line_number);
             }
-            (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
-            *expr_stack = line[i]; expr_stack++;
+
+            if(expr_stack > expr_stack_begin && strcmp(*(expr_stack - 1), "]") == 0) {
+                // TODO: Matrix indexing
+            }
+            else {
+                (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
+                *expr_stack = line[i]; expr_stack++;
+            }
         }
     }
 
@@ -408,11 +414,13 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
     for(int i = start_index; i <= end_index; i++) {
         char *token = line[i];
         int dimensions[2];
-        if(isdigit((int) token[0]) || token[0] == '.' || get_dimensions(token, dimensions) != NULL) {
+        if(isdigit((int) token[0]) || token[0] == '.' ||
+        (get_dimensions(token, dimensions) != NULL && (i == end_index || strcmp(line[i + 1], "[") != 0))) {
             // If the token is a number or variable
             out[out_index] = token;
             out_index++;
-        } else if(strcmp(token, "tr") == 0 || strcmp(token, "sqrt") == 0 || strcmp(token, "choose") == 0) {
+        } else if(strcmp(token, "tr") == 0 || strcmp(token, "sqrt") == 0 || strcmp(token, "choose") == 0 ||
+                (get_dimensions(token, dimensions) != NULL && i < end_index && strcmp(line[i + 1], "[") == 0)) {
             // If the token is a function
             *operator_stack = token;
             operator_stack++;
@@ -448,6 +456,32 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
                 out[out_index] = *operator_stack;
                 out_index++;
             }
+        } else if(strcmp(token, "[") == 0) {
+            // If the token is a left bracket
+            *operator_stack = token;
+            operator_stack++;
+            out[out_index] = token;
+            out_index++;
+        } else if(strcmp(token, "]") == 0) {
+            // If the token is a right bracket
+            while(operator_stack != operator_stack_begin && strcmp(*(operator_stack - 1), "[") != 0) {
+                operator_stack--;
+                out[out_index] = *operator_stack;
+                out_index++;
+            }
+            if(operator_stack == operator_stack_begin) {
+                error(line_number);
+            }
+            out[out_index] = token;
+            out_index++;
+            operator_stack--;
+            if(operator_stack != operator_stack_begin && get_dimensions(*(operator_stack - 1), dimensions) != NULL) {
+                operator_stack--;
+                out[out_index] = *operator_stack;
+                out_index++;
+            }
+        } else if(strcmp(token, ",") == 0) {
+            continue;
         } else {
             error(line_number);
         }
