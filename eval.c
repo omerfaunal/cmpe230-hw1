@@ -144,6 +144,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
         if(size == 12) {
             // Single for loop
             for_loop_open = 1;
+            // TODO: Need to check expression
             if(strcmp(line[1], "(") != 0 || strcmp(line[3], "in") != 0 || strcmp(line[5], ":") != 0 ||
             strcmp(line[7], ":") != 0 || strcmp(line[9], ")") != 0 || strcmp(line[10], "{") != 0) {
                 error(line_number);
@@ -295,6 +296,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             expr_stack--; char* expr1 = *expr_stack;
             if(strcmp(line[i], "+") == 0) {
                 // Addition
+                // TODO: Give dimensions to add function
                 snprintf(*expr_stack, 512, "add(%s, %s)", expr1, expr2);
             } else {
                 // Subtraction
@@ -310,6 +312,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
             (*stack)[0] = c1; (*stack)[1] = r1; stack++;
             expr_stack--; char* expr = *expr_stack;
+            // TODO: give dimensions to transpose function
             snprintf(*expr_stack, 512, "transpose(%s)", expr);
             expr_stack++;
 
