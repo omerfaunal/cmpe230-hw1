@@ -8,11 +8,11 @@ extern struct Scalar scalars[];
 void error(int line);
 
 char* printSep() {
-    return "printf(\"%s\", \"----------\");";
+    return "printf(\"%s\", \"----------\");\n";
 }
 
-char* printId(char* out, float id) {
-    snprintf(out, 80, "printf(\"%s\", \"%f\")","%f;", id);
+char* printId(char* out, char* variableName) {
+    snprintf(out, 80, "printf(\"%s\", %s);\n","%s", variableName);
     return out;
 }
 
