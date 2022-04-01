@@ -41,7 +41,10 @@ char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowC
     matrix.name = strdup(variableName);
     matrix.column_count = columnCount;
     matrix.row_count = rowCount;
-    snprintf(out, MAX_CHAR + 50, "float %s[%d][%d];\n", variableName, matrix.row_count, matrix.column_count);
+    snprintf(out, 512, "int** %s = (int**) calloc(%d, sizeof(int*));\n"
+                       "    for(int i = 0; i < %d; i++) {\n"
+                       "        %s[i] = (int*) calloc(%d, sizeof(int));\n"
+                       "    }\n", variableName, rowCount, rowCount, variableName, columnCount);
     *matrixListPointer = matrix;
     matrixListPointer += 1;
     matrix_count++;
