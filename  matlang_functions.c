@@ -16,27 +16,27 @@ char* printId(char* out, char* variableName) {
     return out;
 }
 
-//Careful! This functions only return the sqrt value and changes the scalar value in this program.
-//After using calculateSqrt function, make sure that you also use scalarValueAssignment function.
-char* calculateSqrt(char* out, int lineNo, char* variableName, char* sqrtName) {
-    float value;
-    for(int i = 0; i < 256; i++){
-        struct Scalar currentScalar = scalars[i];
-        if(strcmp(currentScalar.name, variableName) == 0){
-            value = currentScalar.value;
-            if(value < 0){
-                error(lineNo);
-                return -1;
-            }
-            currentScalar.value = sqrtf(value);
-            scalars[i] = currentScalar;
-            snprintf(out, 512, "sqrt(%s)", variableName);
-            return out;
-        }
-    }
-    error(lineNo);
-    return -1;
-}
+////Careful! This functions only return the sqrt value and changes the scalar value in this program.
+////After using calculateSqrt function, make sure that you also use scalarValueAssignment function.
+//char* calculateSqrt(char* out, int lineNo, char* variableName, char* sqrtName) {
+//    float value;
+//    for(int i = 0; i < 256; i++){
+//        struct Scalar currentScalar = scalars[i];
+//        if(strcmp(currentScalar.name, variableName) == 0){
+//            value = currentScalar.value;
+//            if(value < 0){
+//                error(lineNo);
+//                return -1;
+//            }
+//            currentScalar.value = sqrtf(value);
+//            scalars[i] = currentScalar;
+//            snprintf(out, 512, "sqrt(%s)", variableName);
+//            return out;
+//        }
+//    }
+//    error(lineNo);
+//    return -1;
+//}
 
 char* singleForLoop(char* out, char* expr1, char* expr2, char* expr3) {
     snprintf(out, 512, "for(int i = %s; i < %s; i += %s) {\n", expr1, expr2, expr3);
