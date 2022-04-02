@@ -133,3 +133,48 @@ char* declareSubtractFunction(char* out) {
     return out;
 }
 
+char* declareMultiplyFunction(char* out) {
+    snprintf(out, 2048, "int** multiply(int** arr1, int** arr2, int row_count1, int column_count1, int row_count2, int column_count2) {\n"
+                        "    if(row_count1 == 0 && row_count2 == 0) {\n"
+                        "        int** outArr = (int**) calloc(1, sizeof(int*));\n"
+                        "        outArr[0] = (int*) calloc(1, sizeof(int));\n"
+                        "        outArr[0][0] = arr1[0][0] * arr2[0][0];\n"
+                        "        return outArr;\n"
+                        "    }\n"
+                        "    int** outArr = (int**) calloc(row_count2, sizeof(int*));\n"
+                        "    if(row_count1 == 0) {\n"
+                        "        for(int i = 0; i < row_count2; i++) {\n"
+                        "            outArr[i] = (int*) calloc(column_count2, sizeof(int));\n"
+                        "            for(int j = 0; j < column_count2; j++){\n"
+                        "                outArr[i][j] = arr2[i][j] * arr1[0][0];\n"
+                        "            }\n"
+                        "        }\n"
+                        "        return outArr;\n"
+                        "    }\n"
+                        "\n"
+                        "    int** outArr2 = (int**) calloc(row_count1, sizeof(int*));\n"
+                        "    if(row_count2 == 0) {\n"
+                        "        for(int i = 0; i < row_count1; i++) {\n"
+                        "            outArr2[i] = (int*) calloc(column_count1, sizeof(int));\n"
+                        "            for(int j = 0; j < column_count1; j++){\n"
+                        "                outArr2[i][j] = arr1[i][j] * arr2[0][0];\n"
+                        "            }\n"
+                        "        }\n"
+                        "        return outArr2;\n"
+                        "    }\n"
+                        "    else {\n"
+                        "        int** outArr3 = (int**) calloc(row_count1, sizeof(int*));\n"
+                        "        for (int i = 0; i < row_count1; ++i) {\n"
+                        "            outArr3[i] = (int*) calloc(column_count2, sizeof(int));\n"
+                        "            for (int j = 0; j < column_count2; ++j) {\n"
+                        "                for (int k = 0; k < column_count1; ++k) {\n"
+                        "                    outArr3[i][j] += arr1[i][k] * arr2[k][j];\n"
+                        "                }\n"
+                        "            }\n"
+                        "        }\n"
+                        "        return outArr3;\n"
+                        "    }\n"
+                        "}\n");
+    return out;
+}
+

@@ -14,7 +14,7 @@ extern int line_number;
 void error(int line);
 
 //char* scalarValueDeclaration(char* out, char* variableName, float value) {
-//    // TODO: Declare scalars at matrices with dimension 0x0.
+//    TODO: Declare scalars at matrices with dimension 0x0.
 //    snprintf(out, MAX_CHAR + 50, "float %s = %f;\n", variableName, value);
 //    struct Scalar scalar;
 //    scalar.name = strdup(variableName);
