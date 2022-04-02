@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include "structs.h"
 
-#define MAX_CHAR 256
 #define MAX_LINE 256
 
 const char *terminals[23] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "}",
@@ -30,11 +29,12 @@ char* declareMultiplyFunction(char* out);
 char *declarePrintId(char *out);
 
 int line_number = 1;
+FILE *out_file;
 
 int main(int argc, char *argv[]) {
 
     FILE *fp;
-    char line[MAX_CHAR];
+    char line[2048];
 
     if(argc != 2) {
         printf("Give filename as as command line argument.\n");
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    FILE *out_file = fopen("..\\out.c", "w");
+    out_file = fopen("../out.c", "w");
     if(out_file == NULL) {
         printf("Cannot open out.c\n");
         return 1;
@@ -66,11 +66,11 @@ int main(int argc, char *argv[]) {
     fprintf(out_file, declarePrintId(buffer));
     fprintf(out_file, "int main() {\n");
 
-    while(fgets(line, MAX_CHAR, fp) != NULL) {
+    while(fgets(line, 2048, fp) != NULL) {
         char *pcline = &line[0];
-        char sepline[MAX_CHAR * 2] = {'\0'};
+        char sepline[2048 * 2] = {'\0'};
         char *pcsepline = &sepline[0];
-        char token[MAX_CHAR] = {'\0'};
+        char token[2048] = {'\0'};
         char *pctoken = &token[0];
         short int is_float = 0;
         short int new_declaration = 0;
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
             error(line_number);
         }
 
-        char **final_line = (char**) calloc(MAX_CHAR, sizeof(char*));
+        char **final_line = (char**) calloc(2048, sizeof(char*));
         short int token_ctr = 0;
         final_line[token_ctr] = strtok(sepline, " ");
         token_ctr++;
@@ -250,5 +250,6 @@ int main(int argc, char *argv[]) {
 void error(int line) {
     //TODO
     printf("Error (Line %d)\n", line);
+    fclose(out_file);
     exit(EXIT_FAILURE);
 }

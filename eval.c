@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include "structs.h"
 
-#define MAX_CHAR 256
-
 void error(int line);
 char* declaration(char* out, char* variableName, int columnCount, int rowCount);
 char **rpn(char **line, char **out, short int start_index, short int end_index);
@@ -40,7 +38,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             error(line_number);
             return "error";
         }
-        char out[MAX_CHAR + 50];
+        char out[2048];
         return declaration(out, line[1], 0, 0);
     }
 
@@ -55,7 +53,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             error(line_number);
             return "error";
         }
-        char out[MAX_CHAR + 50];
+        char out[2048];
         int row_count = atoi(line[3]);
         return declaration(out, line[1], 1, row_count);
     }
@@ -71,7 +69,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             error(line_number);
             return "error";
         }
-        char out[MAX_CHAR + 50];
+        char out[2048];
         return declaration(out, line[1], atoi(line[5]), atoi(line[3]));
     }
 
@@ -88,7 +86,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             char* translated = NULL;
             int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
             if(rhs_dims[0] == 0 && rhs_dims[1] == 0) {
-                char *final_line = (char*) calloc(256, sizeof(char));
+                char *final_line = (char*) calloc(2048, sizeof(char));
                 return matrixAssignment(final_line, line[0], translated, 0, 0);
             } else {
                 error(line_number);
@@ -116,7 +114,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                     return "error";
                 }
 
-                char *array_literal = (char*) calloc(512, sizeof(char));
+                char *array_literal = (char*) calloc(2048, sizeof(char));
                 array_literal[0] = '{';
                 for(int i = 3; i < size - 3; i++) {
                     strcat(array_literal, line[i]);
@@ -125,7 +123,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 strcat(array_literal, line[size - 3]);
                 strcat(array_literal, "}");
 
-                char *final_line = (char*) calloc(512, sizeof(char));
+                char *final_line = (char*) calloc(2048, sizeof(char));
                 return matrixAssignment(final_line, line[0], array_literal, dimensions[0], dimensions[1]);
 
             } else {
@@ -134,7 +132,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 char* translated = NULL;
                 int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
                 if(rhs_dims[0] == dimensions[0] && rhs_dims[1] == dimensions[1]) {
-                    char *final_line = (char*) calloc(256, sizeof(char));
+                    char *final_line = (char*) calloc(2048, sizeof(char));
                     return matrixAssignment(final_line, line[0], translated, dimensions[0], dimensions[1]);
                 } else {
                     error(line_number);
@@ -157,7 +155,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 error(line_number);
             }
         }
-        char *temp = (char*) calloc(512, sizeof(char));
+        char *temp = (char*) calloc(2048, sizeof(char));
         declaration(temp, line[2], 0, 0);
         if(strcmp(line[3], "in") == 0) {
             // Single for loop
@@ -207,7 +205,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 error(line_number);
             }
 
-            char *final_line = (char*) calloc(512, sizeof(char));
+            char *final_line = (char*) calloc(2048, sizeof(char));
             return singleForLoop(final_line, line[2], expr1translated, expr2translated, expr3translated);
 
         } else if(strcmp(line[3], ",") == 0) {
@@ -217,7 +215,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                     error(line_number);
                 }
             }
-            char *temp = (char*) calloc(512, sizeof(char));
+            char *temp = (char*) calloc(2048, sizeof(char));
             declaration(temp, line[4], 0, 0);
             if(strcmp(line[5], "in") != 0) {
                 error(line_number);
@@ -310,7 +308,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 error(line_number);
             }
 
-            char *final_line = (char*) calloc(512, sizeof(char));
+            char *final_line = (char*) calloc(2048, sizeof(char));
             return doubleForLoop(final_line, line[2], line[4], expr1translated, expr2translated, expr3translated, expr4translated, expr5translated, expr6translated);
 
         } else {
@@ -348,7 +346,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
         char *expr_rpn[size - 4];
         char *expr_translated = NULL;
         int *expr_dims = typecheck(rpn(line, expr_rpn, 2, size - 3), size - 4, &expr_translated);
-        char *final_line = (char*) calloc(512, sizeof(char));
+        char *final_line = (char*) calloc(2048, sizeof(char));
         return callPrintId(final_line, expr_translated, expr_dims[0], expr_dims[1]);
     }
 
@@ -392,7 +390,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             }
             expr_stack--; char* expr2 = strdup(*expr_stack);
             expr_stack--; char* expr1 = strdup(*expr_stack);
-            snprintf(*expr_stack, 512, "multiply(%s, %s, %d, %d, %d, %d)", expr1, expr2, r1, c1, r2, c2);
+            snprintf(*expr_stack, 2048, "multiply(%s, %s, %d, %d, %d, %d)", expr1, expr2, r1, c1, r2, c2);
             expr_stack++;
 
         } else if(strcmp(line[i], "+") == 0 || strcmp(line[i], "-") == 0) {
@@ -411,10 +409,10 @@ int *typecheck(char **line, int size, char **ptranslated) {
             expr_stack--; char* expr1 = strdup(*expr_stack);
             if(strcmp(line[i], "+") == 0) {
                 // Addition
-                snprintf(*expr_stack, 512, "add(%s, %s, %d, %d)", expr1, expr2, r1, c1);
+                snprintf(*expr_stack, 2048, "add(%s, %s, %d, %d)", expr1, expr2, r1, c1);
             } else {
                 // Subtraction
-                snprintf(*expr_stack, 512, "subtract(%s, %s, %d, %d)", expr1, expr2, r1, c1);
+                snprintf(*expr_stack, 2048, "subtract(%s, %s, %d, %d)", expr1, expr2, r1, c1);
             }
             expr_stack++;
 
@@ -426,7 +424,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
             (*stack)[0] = c1; (*stack)[1] = r1; stack++;
             expr_stack--; char* expr = strdup(*expr_stack);
-            snprintf(*expr_stack, 512, "transpose(%s, %d, %d)", expr, r1, c1);
+            snprintf(*expr_stack, 2048, "transpose(%s, %d, %d)", expr, r1, c1);
             expr_stack++;
 
         } else if(strcmp(line[i], "sqrt") == 0) {
@@ -441,7 +439,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                 error(line_number);
             }
             expr_stack--; char* expr = strdup(*expr_stack);
-            snprintf(*expr_stack, 512, "sqrt_(%s)", expr);
+            snprintf(*expr_stack, 2048, "sqrt_(%s)", expr);
             expr_stack++;
 
         } else if(strcmp(line[i], "choose") == 0) {
@@ -462,14 +460,14 @@ int *typecheck(char **line, int size, char **ptranslated) {
             expr_stack--; char* expr3 = strdup(*expr_stack);
             expr_stack--; char* expr2 = strdup(*expr_stack);
             expr_stack--; char* expr1 = strdup(*expr_stack);
-            snprintf(*expr_stack, 512, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
+            snprintf(*expr_stack, 2048, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
             expr_stack++;
 
         } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
             // Number
             (*stack)[0] = 0; (*stack)[1] = 0; stack++;
-            char *out = (char*) calloc(256, sizeof(char));
-            snprintf(out, 256, "{{%s}}", line[i]);
+            char *out = (char*) calloc(2048, sizeof(char));
+            snprintf(out, 2048, "{{%s}}", line[i]);
             *expr_stack = strdup(out); expr_stack++;
 
         } else if(strcmp(line[i], "[") == 0 || strcmp(line[i], "]") == 0) {
@@ -497,7 +495,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                     }
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
                     expr_stack -= 2; char *expr = strdup(*expr_stack); expr_stack--;
-                    snprintf(*expr_stack, 512, "%s[subtract(%s, 1)]", line[i], expr);
+                    snprintf(*expr_stack, 2048, "%s[subtract(%s, 1)]", line[i], expr);
                     expr_stack++;
 
                 } else if(expr_stack - expr_stack_begin >= 4 && strcmp(*(expr_stack - 4), "[") == 0) {
@@ -513,7 +511,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
                     expr_stack -= 2; char *expr2 = strdup(*expr_stack);
                     expr_stack--; char *expr1 = strdup(*expr_stack); expr_stack--;
-                    snprintf(*expr_stack, 512, "%s[subtract(%s, 1)][subtract(%s, 1)]", line[i], expr1, expr2);
+                    snprintf(*expr_stack, 2048, "%s[subtract(%s, 1)][subtract(%s, 1)]", line[i], expr1, expr2);
                     expr_stack++;
 
                 } else {
@@ -532,9 +530,10 @@ int *typecheck(char **line, int size, char **ptranslated) {
 
     int *out = (int*) calloc(2, sizeof(int));
     out[0] = (*stack_begin)[0]; out[1] = (*stack_begin)[1];
-    free(stack_begin);
+    // TODO: Why do these free's cause problems?
+//    free(stack_begin);
     *ptranslated = strdup(*expr_stack_begin);
-    free(expr_stack_begin);
+//    free(expr_stack_begin);
     return out;
 }
 

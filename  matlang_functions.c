@@ -12,7 +12,7 @@ char* printSep() {
 }
 
 char *declarePrintId(char *out) {
-    snprintf(out, 512, "void *printId(int **variable, int row_count, int column_count){\n"
+    snprintf(out, 2048, "void *printId(int **variable, int row_count, int column_count){\n"
                        "int m = row_count;\n"
                        "if(m == 0) {\n"
                        "    m += 1;\n"
@@ -25,7 +25,7 @@ char *declarePrintId(char *out) {
 }
 
 char* callPrintId(char* out, char* variableName, int row_count, int column_count) {
-    snprintf(out, 512, "printId(%s, %d, %d);\n", variableName, row_count, column_count);
+    snprintf(out, 2048, "printId(%s, %d, %d);\n", variableName, row_count, column_count);
     return out;
 }
 
@@ -33,7 +33,7 @@ char* callPrintId(char* out, char* variableName, int row_count, int column_count
 ////After using calculateSqrt function, make sure that you also use scalarValueAssignment function.
 //char* calculateSqrt(char* out, int lineNo, char* variableName, char* sqrtName) {
 //    float value;
-//    for(int i = 0; i < 256; i++){
+//    for(int i = 0; i < 2048; i++){
 //        struct Scalar currentScalar = scalars[i];
 //        if(strcmp(currentScalar.name, variableName) == 0){
 //            value = currentScalar.value;
@@ -43,7 +43,7 @@ char* callPrintId(char* out, char* variableName, int row_count, int column_count
 //            }
 //            currentScalar.value = sqrtf(value);
 //            scalars[i] = currentScalar;
-//            snprintf(out, 512, "sqrt(%s)", variableName);
+//            snprintf(out, 2048, "sqrt(%s)", variableName);
 //            return out;
 //        }
 //    }
@@ -52,22 +52,22 @@ char* callPrintId(char* out, char* variableName, int row_count, int column_count
 //}
 
 char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3) {
-    snprintf(out, 512, "for(int %s = %s; %s < %s; %s += %s) {\n",id, expr1,id, expr2,id, expr3);
+    snprintf(out, 2048, "for(int %s = %s; %s < %s; %s += %s) {\n",id, expr1,id, expr2,id, expr3);
     return out;
 }
 
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6) {
-    snprintf(out, 512, "for(int %s = %s; %s < %s; %s += %s ) { \n for(int %s = %s; %s < %s; %s += %s )\n",id1, expr1, id1, expr2, id1, expr3, id2, expr4, id2, expr5, id2, expr6);
+    snprintf(out, 2048, "for(int %s = %s; %s < %s; %s += %s ) { \n for(int %s = %s; %s < %s; %s += %s )\n",id1, expr1, id1, expr2, id1, expr3, id2, expr4, id2, expr5, id2, expr6);
     return out;
 }
 
 char* declareSqrtFunction(char* out) {
-    snprintf(out, 512, "float sqrt_(float value) {return sqrtf(value);}\n");
+    snprintf(out, 2048, "float sqrt_(float value) {return sqrtf(value);}\n");
     return out;
 }
 
 char* declareChooseFunction(char* out) {
-    snprintf(out, 512, "char* choose(char* expr1, char* expr2, char* expr3, char* expr4) {\n"
+    snprintf(out, 2048, "char* choose(char* expr1, char* expr2, char* expr3, char* expr4) {\n"
                        "    if(expr1 == 0) {\n"
                        "        return expr2;\n"
                        "    } else if (expr1 > 0) {\n"
@@ -80,7 +80,7 @@ char* declareChooseFunction(char* out) {
 }
 
 char* declareTransposeFunction(char* out) {
-    snprintf(out, 512, "int** transpose(int** arr, int row_count, int column_count) {\n"
+    snprintf(out, 2048, "int** transpose(int** arr, int row_count, int column_count) {\n"
                        "    if(row_count == 0) {\n"
                        "        return arr;\n"
                        "    }\n"
@@ -96,7 +96,7 @@ char* declareTransposeFunction(char* out) {
 }
 
 char* declareAddFunction(char* out) {
-    snprintf(out, 1024, "int** add(int** arr1, int** arr2, int row_count, int column_count) {\n"
+    snprintf(out, 2048, "int** add(int** arr1, int** arr2, int row_count, int column_count) {\n"
                         "    if(row_count == 0) {\n"
                         "        int** outArr = (int**) calloc(1, sizeof(int*));\n"
                         "        outArr[0] = (int*) calloc(1, sizeof(int));\n"
@@ -116,7 +116,7 @@ char* declareAddFunction(char* out) {
 }
 
 char* declareSubtractFunction(char* out) {
-    snprintf(out, 1024, "int** subtract(int** arr1, int** arr2, int row_count, int column_count) {\n"
+    snprintf(out, 2048, "int** subtract(int** arr1, int** arr2, int row_count, int column_count) {\n"
                         "    if(row_count == 0) {\n"
                         "        int** outArr = (int**) calloc(1, sizeof(int*));\n"
                         "        outArr[0] = (int*) calloc(1, sizeof(int));\n"
@@ -181,31 +181,31 @@ char* declareMultiplyFunction(char* out) {
 }
 
 char* callSqrt(char* out, char* variableName) {
-    snprintf(out, 512, "sqrt(float %s);\n", variableName);
+    snprintf(out, 2048, "sqrt(float %s);\n", variableName);
     return out;
 }
 
 char* callChoose(char* out, char* expr1, char* expr2, char* expr3, char* expr4) {
-    snprintf(out, 512, "choose(%s, %s, %s, %s);\n", expr1, expr2, expr3, expr4);
+    snprintf(out, 2048, "choose(%s, %s, %s, %s);\n", expr1, expr2, expr3, expr4);
     return out;
 }
 
 char* callTranspose(char* out, char* variableName, int row_count, int column_count) {
-    snprintf(out, 512, "transpose(%s, %d, %d);\n", variableName, row_count, column_count);
+    snprintf(out, 2048, "transpose(%s, %d, %d);\n", variableName, row_count, column_count);
     return out;
 }
 
 char* callAdd(char* out, char* variableName1, char* variableName2, int row_count, int column_count) {
-    snprintf(out, 512, "add(%s, %s, %d, %d);", variableName1, variableName2, row_count, column_count);
+    snprintf(out, 2048, "add(%s, %s, %d, %d);", variableName1, variableName2, row_count, column_count);
     return out;
 }
 
 char* callSubtract(char* out, char* variableName1, char* variableName2, int row_count, int column_count) {
-    snprintf(out, 512, "subtract(%s, %s, %d, %d);", variableName1, variableName2, row_count, column_count);
+    snprintf(out, 2048, "subtract(%s, %s, %d, %d);", variableName1, variableName2, row_count, column_count);
     return out;
 }
 
 char* callMultiply(char* out, char* variableName1, char* variableName2, int row_count1, int column_count1, int row_count2, int column_count2) {
-    snprintf(out, 512, "multiply(%s, %s, %d, %d, %d, %d);", variableName1, variableName2, row_count1, column_count1, row_count2, column_count2);
+    snprintf(out, 2048, "multiply(%s, %s, %d, %d, %d, %d);", variableName1, variableName2, row_count1, column_count1, row_count2, column_count2);
     return out;
 }
