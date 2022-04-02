@@ -72,11 +72,11 @@ char* matrixAssignment(char* out, char* variableName, char* values, int rowCount
     }
 
     snprintf(out, 256, "int** _temp_ = %s;\n"
-                       "for(int %s = 0; %s < %d){\n"
-                       "    for(int %s = 0; %s < %d){\n"
+                       "for(int %s = 0; %s < %d; %s++){\n"
+                       "    for(int %s = 0; %s < %d; %s++){\n"
                        "        %s[%s][%s] = _temp_[%s][%s];\n"
                        "    }\n"
-                       "}\n", values, loop_variable1, loop_variable1, rowCount, loop_variable2, loop_variable2,
-                       columnCount, variableName, loop_variable1, loop_variable2, loop_variable1, loop_variable2);
+                       "}\n", values, loop_variable1, loop_variable1, rowCount, loop_variable1, loop_variable2, loop_variable2,
+                       columnCount, loop_variable2, variableName, loop_variable1, loop_variable2, loop_variable1, loop_variable2);
     return out;
 }

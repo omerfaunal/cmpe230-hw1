@@ -25,7 +25,7 @@ char *declarePrintId(char *out) {
 }
 
 char* callPrintId(char* out, char* variableName, int row_count, int column_count) {
-    snprintf(out, 512, "printId(%s, %d, %d);", variableName, row_count, column_count);
+    snprintf(out, 512, "printId(%s, %d, %d);\n", variableName, row_count, column_count);
     return out;
 }
 

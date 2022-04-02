@@ -390,9 +390,9 @@ int *typecheck(char **line, int size, char **ptranslated) {
             } else {
                 error(line_number);
             }
-            expr_stack--; char* expr2 = *expr_stack;
-            expr_stack--; char* expr1 = *expr_stack;
-            snprintf(*expr_stack, 512, "multiply(%s, %s)", expr1, expr2);
+            expr_stack--; char* expr2 = strdup(*expr_stack);
+            expr_stack--; char* expr1 = strdup(*expr_stack);
+            snprintf(*expr_stack, 512, "multiply(%s, %s, %d, %d, %d, %d)", expr1, expr2, r1, c1, r2, c2);
             expr_stack++;
 
         } else if(strcmp(line[i], "+") == 0 || strcmp(line[i], "-") == 0) {
@@ -407,8 +407,8 @@ int *typecheck(char **line, int size, char **ptranslated) {
             } else {
                 error(line_number);
             }
-            expr_stack--; char* expr2 = *expr_stack;
-            expr_stack--; char* expr1 = *expr_stack;
+            expr_stack--; char* expr2 = strdup(*expr_stack);
+            expr_stack--; char* expr1 = strdup(*expr_stack);
             if(strcmp(line[i], "+") == 0) {
                 // Addition
                 snprintf(*expr_stack, 512, "add(%s, %s, %d, %d)", expr1, expr2, r1, c1);
@@ -425,7 +425,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             }
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
             (*stack)[0] = c1; (*stack)[1] = r1; stack++;
-            expr_stack--; char* expr = *expr_stack;
+            expr_stack--; char* expr = strdup(*expr_stack);
             snprintf(*expr_stack, 512, "transpose(%s, %d, %d)", expr, r1, c1);
             expr_stack++;
 
@@ -440,7 +440,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             } else {
                 error(line_number);
             }
-            expr_stack--; char* expr = *expr_stack;
+            expr_stack--; char* expr = strdup(*expr_stack);
             snprintf(*expr_stack, 512, "sqrt_(%s)", expr);
             expr_stack++;
 
@@ -458,10 +458,10 @@ int *typecheck(char **line, int size, char **ptranslated) {
             } else {
                 error(line_number);
             }
-            expr_stack--; char* expr4 = *expr_stack;
-            expr_stack--; char* expr3 = *expr_stack;
-            expr_stack--; char* expr2 = *expr_stack;
-            expr_stack--; char* expr1 = *expr_stack;
+            expr_stack--; char* expr4 = strdup(*expr_stack);
+            expr_stack--; char* expr3 = strdup(*expr_stack);
+            expr_stack--; char* expr2 = strdup(*expr_stack);
+            expr_stack--; char* expr1 = strdup(*expr_stack);
             snprintf(*expr_stack, 512, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
             expr_stack++;
 
@@ -470,11 +470,11 @@ int *typecheck(char **line, int size, char **ptranslated) {
             (*stack)[0] = 0; (*stack)[1] = 0; stack++;
             char *out = (char*) calloc(256, sizeof(char));
             snprintf(out, 256, "{{%s}}", line[i]);
-            *expr_stack = out; expr_stack++;
+            *expr_stack = strdup(out); expr_stack++;
 
         } else if(strcmp(line[i], "[") == 0 || strcmp(line[i], "]") == 0) {
             // Bracket
-            *expr_stack = line[i]; expr_stack++;
+            *expr_stack = strdup(line[i]); expr_stack++;
 
         } else {
             // Variable or error
@@ -496,7 +496,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                         error(line_number);
                     }
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
-                    expr_stack -= 2; char *expr = *expr_stack; expr_stack--;
+                    expr_stack -= 2; char *expr = strdup(*expr_stack); expr_stack--;
                     snprintf(*expr_stack, 512, "%s[subtract(%s, 1)]", line[i], expr);
                     expr_stack++;
 
@@ -511,8 +511,8 @@ int *typecheck(char **line, int size, char **ptranslated) {
                         error(line_number);
                     }
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
-                    expr_stack -= 2; char *expr2 = *expr_stack;
-                    expr_stack--; char *expr1 = *expr_stack; expr_stack--;
+                    expr_stack -= 2; char *expr2 = strdup(*expr_stack);
+                    expr_stack--; char *expr1 = strdup(*expr_stack); expr_stack--;
                     snprintf(*expr_stack, 512, "%s[subtract(%s, 1)][subtract(%s, 1)]", line[i], expr1, expr2);
                     expr_stack++;
 
@@ -521,7 +521,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                 }
             } else {
                 (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
-                *expr_stack = line[i]; expr_stack++;
+                *expr_stack = strdup(line[i]); expr_stack++;
             }
         }
     }
