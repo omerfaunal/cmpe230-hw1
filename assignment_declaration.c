@@ -55,8 +55,8 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
     return out;
 }
 
-//TODO
 char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount) {
+    // TODO: This should check whether rowCount == columnCount == 0, and if so then do scalar assignment
     snprintf(out, 256, "int** temp = %s;\n"
                        "for(int i = 0; i < %d){\n"
                        "    for(int j = 0; j < %d){\n"

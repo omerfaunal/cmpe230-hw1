@@ -11,7 +11,7 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount);
 char **rpn(char **line, char **out, short int start_index, short int end_index);
 int *get_dimensions(char *name, int *dimensions);
 int *typecheck(char **line, int size, char **ptranslated);
-char* matrixAssignment(char* out, char* variableName, int arraySize);
+char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount);
 char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3);
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
 char* printId(char* out, char* variableName, int row_count, int column_count);
@@ -88,10 +88,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             char* translated = NULL;
             int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
             if(rhs_dims[0] == 0 && rhs_dims[1] == 0) {
-                // TODO: Scalar assignment
-                char *final_line = (char*) calloc(1024, sizeof(char));
-                snprintf(final_line, 512, "%s = %s;\n", line[0], translated);
-                return final_line;
+                char *final_line = (char*) calloc(256, sizeof(char));
+                return matrixAssignment(final_line, line[0], translated, 0, 0);
             } else {
                 error(line_number);
             }
@@ -117,9 +115,18 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                     error(line_number);
                     return "error";
                 }
+
+                char *array_literal = (char*) calloc(512, sizeof(char));
+                array_literal[0] = '{';
+                for(int i = 3; i < size - 3; i++) {
+                    strcat(array_literal, line[i]);
+                    strcat(array_literal, ",");
+                }
+                strcat(array_literal, line[size - 3]);
+                strcat(array_literal, "}");
+
                 char *final_line = (char*) calloc(512, sizeof(char));
-                // TODO: Looks like this function isn't working:
-                return matrixAssignment(final_line, line[0], dimensions[0] * dimensions[1]);
+                return matrixAssignment(final_line, line[0], array_literal, dimensions[0], dimensions[1]);
 
             } else {
                 // Non-explicit matrix assignment
@@ -127,10 +134,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 char* translated = NULL;
                 int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
                 if(rhs_dims[0] == dimensions[0] && rhs_dims[1] == dimensions[1]) {
-                    // TODO: Matrix assignment
-                    char *final_line = (char*) calloc(512, sizeof(char));
-                    snprintf(final_line, 512, "%s = %s", line[0], translated);
-                    return final_line;
+                    char *final_line = (char*) calloc(256, sizeof(char));
+                    return matrixAssignment(final_line, line[0], translated, dimensions[0], dimensions[1]);
                 } else {
                     error(line_number);
                 }
