@@ -13,17 +13,17 @@ extern int line_number;
 
 void error(int line);
 
-char* scalarValueDeclaration(char* out, char* variableName, float value) {
-    // TODO: Declare scalars at matrices with dimension 0x0.
-    snprintf(out, MAX_CHAR + 50, "float %s = %f;\n", variableName, value);
-    struct Scalar scalar;
-    scalar.name = strdup(variableName);
-    scalar.value = value;
-    *scalarListPointer = scalar;
-    scalarListPointer += 1;
-    scalar_count++;
-    return out;
-}
+//char* scalarValueDeclaration(char* out, char* variableName, float value) {
+//    // TODO: Declare scalars at matrices with dimension 0x0.
+//    snprintf(out, MAX_CHAR + 50, "float %s = %f;\n", variableName, value);
+//    struct Scalar scalar;
+//    scalar.name = strdup(variableName);
+//    scalar.value = value;
+//    *scalarListPointer = scalar;
+//    scalarListPointer += 1;
+//    scalar_count++;
+//    return out;
+//}
 
 char* assignment(char* out, char** tokens, int tokens_size) {
     for(int i = 0; i < tokens_size; i++) {
@@ -32,7 +32,7 @@ char* assignment(char* out, char** tokens, int tokens_size) {
     return out;
 }
 
-char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowCount) {
+char* declaration(char* out, char* variableName, int columnCount, int rowCount) {
     if(columnCount < 0 || rowCount < 0){
         error(line_number);
         return out;
@@ -41,6 +41,10 @@ char* matrixDeclaration(char* out, char* variableName, int columnCount, int rowC
     matrix.name = strdup(variableName);
     matrix.column_count = columnCount;
     matrix.row_count = rowCount;
+    if(rowCount == 0) {
+        rowCount++;
+        columnCount++;
+    }
     snprintf(out, 512, "int** %s = (int**) calloc(%d, sizeof(int*));\n"
                        "    for(int i = 0; i < %d; i++) {\n"
                        "        %s[i] = (int*) calloc(%d, sizeof(int));\n"
