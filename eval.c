@@ -12,8 +12,8 @@ char **rpn(char **line, char **out, short int start_index, short int end_index);
 int *get_dimensions(char *name, int *dimensions);
 int *typecheck(char **line, int size, char **ptranslated);
 char* matrixAssignment(char* out, char* variableName, int arraySize);
-char* singleForLoop(char* out, char* expr1, char* expr2, char* expr3);
-char* doubleForLoop(char* out, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
+char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3);
+char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
 char* printId(char* out, char* variableName, int row_count, int column_count);
 char* printSep();
 
@@ -89,7 +89,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
             if(rhs_dims[0] == 0 && rhs_dims[1] == 0) {
                 // TODO: Scalar assignment
-                char *final_line = (char*) calloc(512, sizeof(char));
+                char *final_line = (char*) calloc(1024, sizeof(char));
                 snprintf(final_line, 512, "%s = %s;\n", line[0], translated);
                 return final_line;
             } else {
@@ -201,7 +201,9 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             if(ptr != size - 3 || strcmp(line[ptr + 1], "{") != 0) {
                 error(line_number);
             }
-            // TODO: Return single for loop
+
+            char *final_line = (char*) calloc(512, sizeof(char));
+            return singleForLoop(final_line, line[2], expr1translated, expr2translated, expr3translated);
 
         } else if(strcmp(line[3], ",") == 0) {
             // Double for loop
@@ -302,7 +304,10 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             if(ptr != size - 3 || strcmp(line[ptr + 1], "{") != 0) {
                 error(line_number);
             }
-            // TODO: Return double for loop
+
+            char *final_line = (char*) calloc(512, sizeof(char));
+            return doubleForLoop(final_line, line[2], line[4], expr1translated, expr2translated, expr3translated, expr4translated, expr5translated, expr6translated);
+
         } else {
             error(line_number);
         }
