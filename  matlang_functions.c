@@ -11,6 +11,7 @@ char* printSep() {
     return "printf(\"%s\", \"----------\");\n";
 }
 
+//TODO matrix printing, all scalars are also matrices
 char* printId(char* out, char* variableName) {
     snprintf(out, 512, "printf(\"%s\", %s);\n","%s", variableName);
     return out;
