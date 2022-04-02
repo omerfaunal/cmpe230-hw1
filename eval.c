@@ -378,7 +378,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             }
             stack--; int r2 = (*stack)[0]; int c2 = (*stack)[1];
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
-            if(r1 == 1 && c1 == 1) {
+            if(r1 == 0 && c1 == 0) {
                 (*stack)[0] = r2; (*stack)[1] = c2; stack++;
             } else if(c1 == r2) {
                 (*stack)[0] = r1; (*stack)[1] = c2; stack++;
@@ -406,11 +406,10 @@ int *typecheck(char **line, int size, char **ptranslated) {
             expr_stack--; char* expr1 = *expr_stack;
             if(strcmp(line[i], "+") == 0) {
                 // Addition
-                // TODO: Give dimensions to add function
-                snprintf(*expr_stack, 512, "add(%s, %s)", expr1, expr2);
+                snprintf(*expr_stack, 512, "add(%s, %s, %d, %d)", expr1, expr2, r1, c1);
             } else {
                 // Subtraction
-                snprintf(*expr_stack, 512, "subtract(%s, %s)", expr1, expr2);
+                snprintf(*expr_stack, 512, "subtract(%s, %s, %d, %d)", expr1, expr2, r1, c1);
             }
             expr_stack++;
 
@@ -422,8 +421,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
             (*stack)[0] = c1; (*stack)[1] = r1; stack++;
             expr_stack--; char* expr = *expr_stack;
-            // TODO: give dimensions to transpose function
-            snprintf(*expr_stack, 512, "transpose(%s)", expr);
+            snprintf(*expr_stack, 512, "transpose(%s, %d, %d)", expr, r1, c1);
             expr_stack++;
 
         } else if(strcmp(line[i], "sqrt") == 0) {
@@ -432,7 +430,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                 error(line_number);
             }
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
-            if(r1 == 1 && c1 == 1) {
+            if(r1 == 0 && c1 == 0) {
                 (*stack)[0] = r1; (*stack)[1] = c1; stack++;
             } else {
                 error(line_number);
@@ -450,8 +448,8 @@ int *typecheck(char **line, int size, char **ptranslated) {
             stack--; int r3 = (*stack)[0]; int c3 = (*stack)[1];
             stack--; int r2 = (*stack)[0]; int c2 = (*stack)[1];
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
-            if(r1 == 1 && r2 == 1 && r3 == 1 && r4 == 1 && c1 == 1 && c2 == 1 && c3 == 1 && c4 == 1) {
-                (*stack)[0] = 1; (*stack)[1] = 1; stack++;
+            if(r1 == 0 && r2 == 0 && r3 == 0 && r4 == 0 && c1 == 0 && c2 == 0 && c3 == 0 && c4 == 0) {
+                (*stack)[0] = 0; (*stack)[1] = 0; stack++;
             } else {
                 error(line_number);
             }
@@ -465,7 +463,9 @@ int *typecheck(char **line, int size, char **ptranslated) {
         } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
             // Number
             (*stack)[0] = 1; (*stack)[1] = 1; stack++;
-            *expr_stack = line[i]; expr_stack++;
+            char *out = (char*) calloc(256, sizeof(char));
+            snprintf(out, 256, "{{%s}}", line[i]);
+            *expr_stack = out; expr_stack++;
 
         } else if(strcmp(line[i], "[") == 0 || strcmp(line[i], "]") == 0) {
             // Bracket
@@ -492,7 +492,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                     }
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
                     expr_stack -= 2; char *expr = *expr_stack; expr_stack--;
-                    snprintf(*expr_stack, 512, "%s[%s]", line[i], expr);
+                    snprintf(*expr_stack, 512, "%s[subtract(%s, 1)]", line[i], expr);
                     expr_stack++;
 
                 } else if(expr_stack - expr_stack_begin >= 4 && strcmp(*(expr_stack - 4), "[") == 0) {
@@ -508,7 +508,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
                     expr_stack -= 2; char *expr2 = *expr_stack;
                     expr_stack--; char *expr1 = *expr_stack; expr_stack--;
-                    snprintf(*expr_stack, 512, "%s[%s][%s]", line[i], expr1, expr2);
+                    snprintf(*expr_stack, 512, "%s[subtract(%s, 1)][subtract(%s, 1)]", line[i], expr1, expr2);
                     expr_stack++;
 
                 } else {
@@ -537,8 +537,8 @@ int *get_dimensions(char *name, int *dimensions) {
     // This returns the dimensions of a variable if it exists, or NULL otherwise.
     for(int i = 0; i < scalar_count; i++) {
         if(strcmp(name, scalars[i].name) == 0) {
-            dimensions[0] = 1;
-            dimensions[1] = 1;
+            dimensions[0] = 0;
+            dimensions[1] = 0;
             return dimensions;
         }
     }
