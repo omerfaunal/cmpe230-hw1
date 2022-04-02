@@ -14,7 +14,7 @@ int *typecheck(char **line, int size, char **ptranslated);
 char* matrixAssignment(char* out, char* variableName, int arraySize);
 char* singleForLoop(char* out, char* expr1, char* expr2, char* expr3);
 char* doubleForLoop(char* out, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
-char* printId(char* out, float id);
+char* printId(char* out, char* variableName, int row_count, int column_count);
 char* printSep();
 
 extern int line_number;
@@ -332,13 +332,14 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
     if(strcmp(line[0], "print") == 0) {
         // Print statement
-        // TODO: Argument might be an indexed matrix
-        if(size != 5 || strcmp(line[1], "(") != 0 || strcmp(line[3], ")") != 0) {
+        if(size < 5 || strcmp(line[1], "(") != 0 || strcmp(line[size - 2], ")") != 0) {
             error(line_number);
-            return "error";
         }
-
-        return printId(line[2], 0);  // TODO: What is 'float id' in this function? I don't understand
+        char *expr_rpn[size - 4];
+        char *expr_translated = NULL;
+        int *expr_dims = typecheck(rpn(line, expr_rpn, 2, size - 3), size - 4, &expr_translated);
+        char *final_line = (char*) calloc(512, sizeof(char));
+        return printId(final_line, expr_translated, expr_dims[0], expr_dims[1]);
     }
 
     if(strcmp(line[0], "printsep") == 0) {
