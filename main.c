@@ -20,7 +20,6 @@ struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing sc
 short int scalar_count = 0;
 
 void error(int line);
-char* scalarValueDeclaration(char* out, char* variableName, float value);
 char* eval(char** line, short int size);
 
 int line_number = 1;
