@@ -467,7 +467,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
 
         } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
             // Number
-            (*stack)[0] = 1; (*stack)[1] = 1; stack++;
+            (*stack)[0] = 0; (*stack)[1] = 0; stack++;
             char *out = (char*) calloc(256, sizeof(char));
             snprintf(out, 256, "{{%s}}", line[i]);
             *expr_stack = out; expr_stack++;
