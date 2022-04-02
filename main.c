@@ -21,6 +21,12 @@ short int scalar_count = 0;
 
 void error(int line);
 char* eval(char** line, short int size);
+char* declareSqrtFunction(char* out);
+char* declareChooseFunction(char* out);
+char* declareTransposeFunction(char* out);
+char* declareAddFunction(char* out);
+char* declareSubtractFunction(char* out);
+char* declareMultiplyFunction(char* out);
 
 int line_number = 1;
 
@@ -45,6 +51,15 @@ int main(int argc, char *argv[]) {
         printf("Cannot open out.c\n");
         return 1;
     }
+
+    char *buffer = (char*) calloc(2048, sizeof(char));
+    fprintf(out_file, declareAddFunction(buffer));
+    fprintf(out_file, declareSubtractFunction(buffer));
+    fprintf(out_file, declareMultiplyFunction(buffer));
+    fprintf(out_file, declareSqrtFunction(buffer));
+    fprintf(out_file, declareTransposeFunction(buffer));
+    fprintf(out_file, declareChooseFunction(buffer));
+    fprintf(out_file, "int main() {\n");
 
     while(fgets(line, MAX_CHAR, fp) != NULL) {
         char *pcline = &line[0];
@@ -218,6 +233,8 @@ int main(int argc, char *argv[]) {
 
         line_number++;
     }
+
+    fprintf(out_file, "return 0;\n}\n");
 
     fclose(fp);
     fclose(out_file);
