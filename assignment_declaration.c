@@ -56,7 +56,12 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
 }
 
 //TODO
-char* matrixAssignment(char* out, char* variableName, int arraySize) {
-    snprintf(out, 256, "for(int i = 0; i < %d; i++) {%s[i] = values[i];}\n", arraySize, variableName);
+char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount) {
+    snprintf(out, 256, "int** temp = %s;\n"
+                       "for(int i = 0; i < %d){\n"
+                       "    for(int j = 0; j < %d){\n"
+                       "        %s[i][j] = temp[i][j];\n"
+                       "    }\n"
+                       "}\n", values, rowCount, columnCount,variableName);
     return out;
 }

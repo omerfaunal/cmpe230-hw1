@@ -4,13 +4,11 @@ Omer:
 -comment
 -print, printsep
 -choose
-
--documentation, commenting
-
-kalanlar:
 -transposes
 - +-* operations
 
+kalanlar:
+-documentation, commenting
 
 Eren:
 -input
