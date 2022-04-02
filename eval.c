@@ -22,6 +22,8 @@ extern struct Scalar scalars[];
 extern struct Matrix matrices[];
 extern short int scalar_count;
 extern short int matrix_count;
+extern char *terminals[];
+extern struct Matrix* matrixListPointer;
 
 short int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
                               // 2: There is a double for loop currently open.
@@ -76,7 +78,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
     int dimensions[2];
     if(get_dimensions(line[0], dimensions) != NULL) {
-        if(dimensions[0] == 1 && dimensions[1] == 1) {
+        if(dimensions[0] == 0 && dimensions[1] == 0) {
             // Scalar assignment
             if (size < 4 || strcmp(line[1], "=") != 0) {
                 error(line_number);
@@ -85,7 +87,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             char *out[size - 3];
             char* translated = NULL;
             int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
-            if(rhs_dims[0] == 1 && rhs_dims[1] == 1) {
+            if(rhs_dims[0] == 0 && rhs_dims[1] == 0) {
+                // TODO: Scalar assignment
                 char *final_line = (char*) calloc(512, sizeof(char));
                 snprintf(final_line, 512, "%s = %s;\n", line[0], translated);
                 return final_line;
@@ -124,6 +127,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
                 char* translated = NULL;
                 int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
                 if(rhs_dims[0] == dimensions[0] && rhs_dims[1] == dimensions[1]) {
+                    // TODO: Matrix assignment
                     char *final_line = (char*) calloc(512, sizeof(char));
                     snprintf(final_line, 512, "%s = %s", line[0], translated);
                     return final_line;
@@ -140,69 +144,167 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             error(line_number);
             return "error";
         }
-        if(size == 12) {
+        if(size < 12 || strcmp(line[1], "(") != 0) {
+            error(line_number);
+        }
+        for(int i = 0; i < 23; i++) {
+            if(strcmp(line[2], terminals[i]) == 0) {
+                error(line_number);
+            }
+        }
+        char *temp = (char*) calloc(512, sizeof(char));
+        declaration(temp, line[2], 0, 0);
+        if(strcmp(line[3], "in") == 0) {
             // Single for loop
-            for_loop_open = 1;
-            // TODO: Need to check expression
-            if(strcmp(line[1], "(") != 0 || strcmp(line[3], "in") != 0 || strcmp(line[5], ":") != 0 ||
-            strcmp(line[7], ":") != 0 || strcmp(line[9], ")") != 0 || strcmp(line[10], "{") != 0) {
+            int start = 4;
+            int ptr = 4;
+            while(ptr < size && strcmp(line[ptr], ":") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
                 error(line_number);
-                return "error";
             }
-
-            int dim[2];
-            for(int token_index = 4; token_index <= 8; token_index += 2) {
-                if (get_dimensions(line[token_index], dim) == NULL) {
-                    for (int i = 0; i < strlen(line[token_index]); i++) {
-                        if (!isdigit((int) line[token_index][i])) {
-                            error(line_number);
-                            return "error";
-                        }
-                    }
-                } else {
-                    if (!(dim[0] == 1 && dim[1] == 1)) {
-                        error(line_number);
-                        return "error";
-                    }
-                }
+            char *expr1rpn[ptr - start];
+            char *expr1translated = NULL;
+            int *expr1dims = typecheck(rpn(line, expr1rpn, start, ptr - 1), ptr - start, &expr1translated);
+            if(expr1dims[0] != 0 || expr1dims[1] != 0) {
+                error(line_number);
             }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ":") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr2rpn[ptr - start];
+            char *expr2translated = NULL;
+            int *expr2dims = typecheck(rpn(line, expr2rpn, start, ptr - 1), ptr - start, &expr2translated);
+            if(expr2dims[0] != 0 || expr2dims[1] != 0) {
+                error(line_number);
+            }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ")") !=  0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr3rpn[ptr - start];
+            char *expr3translated = NULL;
+            int *expr3dims = typecheck(rpn(line, expr3rpn, start, ptr - 1), ptr - start, &expr3translated);
+            if(expr3dims[0] != 0 || expr3dims[1] != 0) {
+                error(line_number);
+            }
+            if(ptr != size - 3 || strcmp(line[ptr + 1], "{") != 0) {
+                error(line_number);
+            }
+            // TODO: Return single for loop
 
-            char *final_line = (char*) calloc(512, sizeof(char));
-            return singleForLoop(final_line, line[4], line[6], line[8]);
-
-        } else if(size == 20) {
+        } else if(strcmp(line[3], ",") == 0) {
             // Double for loop
-            for_loop_open = 2;
-            if(strcmp(line[1], "(") != 0 || strcmp(line[3], ",") != 0 || strcmp(line[5], "in") != 0 ||
-            strcmp(line[7], ":") != 0 || strcmp(line[9], ":") != 0 || strcmp(line[11], ",") != 0 ||
-            strcmp(line[13], ":") != 0 || strcmp(line[15], ":") != 0 || strcmp(line[17], ")") != 0 ||
-            strcmp(line[18], "{") != 0) {
-                error(line_number);
-                return "error";
-            }
-            int dim[2];
-            for(int token_index = 6; token_index <= 16; token_index += 2) {
-                if (get_dimensions(line[token_index], dim) == NULL) {
-                    for (int i = 0; i < strlen(line[token_index]); i++) {
-                        if (!isdigit((int) line[token_index][i])) {
-                            error(line_number);
-                            return "error";
-                        }
-                    }
-                } else {
-                    if (!(dim[0] == 1 && dim[1] == 1)) {
-                        error(line_number);
-                        return "error";
-                    }
+            for(int i = 0; i < 23; i++) {
+                if(strcmp(line[4], terminals[i]) == 0) {
+                    error(line_number);
                 }
             }
-
-            char *final_line = (char*) calloc(512, sizeof(char));
-            return doubleForLoop(final_line, line[6], line[8], line[10], line[12], line[14], line[16]);
-
+            char *temp = (char*) calloc(512, sizeof(char));
+            declaration(temp, line[4], 0, 0);
+            if(strcmp(line[5], "in") != 0) {
+                error(line_number);
+            }
+            int start = 6;
+            int ptr = 6;
+            while(ptr < size && strcmp(line[ptr], ":") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr1rpn[ptr - start];
+            char *expr1translated = NULL;
+            int *expr1dims = typecheck(rpn(line, expr1rpn, start, ptr - 1), ptr - start, &expr1translated);
+            if(expr1dims[0] != 0 || expr1dims[1] != 0) {
+                error(line_number);
+            }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ":") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr2rpn[ptr - start];
+            char *expr2translated = NULL;
+            int *expr2dims = typecheck(rpn(line, expr2rpn, start, ptr - 1), ptr - start, &expr2translated);
+            if(expr2dims[0] != 0 || expr2dims[1] != 0) {
+                error(line_number);
+            }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ",") !=  0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr3rpn[ptr - start];
+            char *expr3translated = NULL;
+            int *expr3dims = typecheck(rpn(line, expr3rpn, start, ptr - 1), ptr - start, &expr3translated);
+            if(expr3dims[0] != 0 || expr3dims[1] != 0) {
+                error(line_number);
+            }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ":") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr4rpn[ptr - start];
+            char *expr4translated = NULL;
+            int *expr4dims = typecheck(rpn(line, expr4rpn, start, ptr - 1), ptr - start, &expr4translated);
+            if(expr4dims[0] != 0 || expr4dims[1] != 0) {
+                error(line_number);
+            }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ":") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr5rpn[ptr - start];
+            char *expr5translated = NULL;
+            int *expr5dims = typecheck(rpn(line, expr5rpn, start, ptr - 1), ptr - start, &expr5translated);
+            if(expr5dims[0] != 0 || expr5dims[1] != 0) {
+                error(line_number);
+            }
+            start = ptr + 1;
+            ptr = start;
+            while(ptr < size && strcmp(line[ptr], ")") != 0) {
+                ptr++;
+            }
+            if(ptr == size || ptr == start) {
+                error(line_number);
+            }
+            char *expr6rpn[ptr - start];
+            char *expr6translated = NULL;
+            int *expr6dims = typecheck(rpn(line, expr6rpn, start, ptr - 1), ptr - start, &expr6translated);
+            if(expr6dims[0] != 0 || expr6dims[1] != 0) {
+                error(line_number);
+            }
+            if(ptr != size - 3 || strcmp(line[ptr + 1], "{") != 0) {
+                error(line_number);
+            }
+            // TODO: Return double for loop
         } else {
             error(line_number);
-            return "error";
         }
     }
 
@@ -214,9 +316,13 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
         }
         if(for_loop_open == 1) {
             for_loop_open = 0;
+            matrix_count--;
+            matrixListPointer--;
             return "}";
         } else if(for_loop_open == 2) {
             for_loop_open = 0;
+            matrix_count -= 2;
+            matrixListPointer -= 2;
             return "}}";
         } else{
             error(line_number);
