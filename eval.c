@@ -255,7 +255,6 @@ int *typecheck(char **line, int size, char **ptranslated) {
     // If a type error is encountered, the error() function is called and translation stops. Otherwise, the translated
     // expression is stored in char *translated.
     // char **line is the list of tokens of the expression in Reverse Polish Notation.
-    // TODO: Matrix indexing
     int (*stack)[2] = (int(*)[2]) calloc(size, sizeof(int[2]));
     int (*stack_begin)[2] = stack;
     char **expr_stack = (char**) calloc(size, sizeof(char*));
@@ -356,17 +355,55 @@ int *typecheck(char **line, int size, char **ptranslated) {
             // Number
             (*stack)[0] = 1; (*stack)[1] = 1; stack++;
             *expr_stack = line[i]; expr_stack++;
+
+        } else if(strcmp(line[i], "[") == 0 || strcmp(line[i], "]") == 0) {
+            // Bracket
+            *expr_stack = line[i]; expr_stack++;
+
         } else {
-            // Variable
+            // Variable or error
+
             int dim[2];
             if(get_dimensions(line[i], dim) == NULL) {
                 error(line_number);
             }
 
             if(expr_stack > expr_stack_begin && strcmp(*(expr_stack - 1), "]") == 0) {
-                // TODO: Matrix indexing
-            }
-            else {
+                // Matrix indexing
+                if(expr_stack - expr_stack_begin >= 3 && strcmp(*(expr_stack - 3), "[") == 0) {
+                    // Single argument matrix indexing (i.e. vector indexing)
+                    if(dim[1] != 1 || dim[0] == 0) {
+                        error(line_number);
+                    }
+                    stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+                    if(r1 != 0 || c1 != 0) {
+                        error(line_number);
+                    }
+                    (*stack)[0] = 0; (*stack)[1] = 0; stack++;
+                    expr_stack -= 2; char *expr = *expr_stack; expr_stack--;
+                    snprintf(*expr_stack, 512, "%s[%s]", line[i], expr);
+                    expr_stack++;
+
+                } else if(expr_stack - expr_stack_begin >= 4 && strcmp(*(expr_stack - 4), "[") == 0) {
+                    // Double argument matrix indexing
+                    if(dim[0] == 0 || dim[1] == 0) {
+                        error(line_number);
+                    }
+                    stack--; int r2 = (*stack)[0]; int c2 = (*stack)[1];
+                    stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
+                    if(r1 != 0 || r2 != 0 || c1 != 0 || c2 != 0) {
+                        error(line_number);
+                    }
+                    (*stack)[0] = 0; (*stack)[1] = 0; stack++;
+                    expr_stack -= 2; char *expr2 = *expr_stack;
+                    expr_stack--; char *expr1 = *expr_stack; expr_stack--;
+                    snprintf(*expr_stack, 512, "%s[%s][%s]", line[i], expr1, expr2);
+                    expr_stack++;
+
+                } else {
+                    error(line_number);
+                }
+            } else {
                 (*stack)[0] = dim[0]; (*stack)[1] = dim[1]; stack++;
                 *expr_stack = line[i]; expr_stack++;
             }
