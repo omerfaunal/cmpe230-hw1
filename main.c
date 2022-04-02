@@ -27,6 +27,7 @@ char* declareTransposeFunction(char* out);
 char* declareAddFunction(char* out);
 char* declareSubtractFunction(char* out);
 char* declareMultiplyFunction(char* out);
+char *declarePrintId(char *out);
 
 int line_number = 1;
 
@@ -53,12 +54,16 @@ int main(int argc, char *argv[]) {
     }
 
     char *buffer = (char*) calloc(2048, sizeof(char));
+    fprintf(out_file, "#include <stdio.h>\n"
+                      "#include <stdlib.h>\n"
+                      "#include <math.h>\n");
     fprintf(out_file, declareAddFunction(buffer));
     fprintf(out_file, declareSubtractFunction(buffer));
     fprintf(out_file, declareMultiplyFunction(buffer));
     fprintf(out_file, declareSqrtFunction(buffer));
     fprintf(out_file, declareTransposeFunction(buffer));
     fprintf(out_file, declareChooseFunction(buffer));
+    fprintf(out_file, declarePrintId(buffer));
     fprintf(out_file, "int main() {\n");
 
     while(fgets(line, MAX_CHAR, fp) != NULL) {

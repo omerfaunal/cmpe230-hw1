@@ -45,10 +45,15 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
         rowCount++;
         columnCount++;
     }
+    char loop_variable[3] = "i";
+    if(strcmp(variableName, "i") == 0) {
+        strcat(loop_variable, "_");
+    }
     snprintf(out, 512, "int** %s = (int**) calloc(%d, sizeof(int*));\n"
-                       "    for(int i = 0; i < %d; i++) {\n"
-                       "        %s[i] = (int*) calloc(%d, sizeof(int));\n"
-                       "    }\n", variableName, rowCount, rowCount, variableName, columnCount);
+                       "    for(int %s = 0; %s < %d; %s++) {\n"
+                       "        %s[%s] = (int*) calloc(%d, sizeof(int));\n"
+                       "    }\n", variableName, rowCount, loop_variable, loop_variable, rowCount, loop_variable,
+                       variableName, loop_variable, columnCount);
     *matrixListPointer = matrix;
     matrixListPointer += 1;
     matrix_count++;
@@ -57,11 +62,21 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
 
 char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount) {
     // TODO: This should check whether rowCount == columnCount == 0, and if so then do scalar assignment
-    snprintf(out, 256, "int** temp = %s;\n"
-                       "for(int i = 0; i < %d){\n"
-                       "    for(int j = 0; j < %d){\n"
-                       "        %s[i][j] = temp[i][j];\n"
+    char loop_variable1[3] = "i";
+    while(strcmp(variableName, loop_variable1) == 0 || strcmp(variableName, loop_variable1) == 0) {
+        strcat(loop_variable1, "_");
+    }
+    char loop_variable2[3] = "j";
+    while(strcmp(variableName, loop_variable2) == 0 || strcmp(variableName, loop_variable2) == 0) {
+        strcat(loop_variable2, "_");
+    }
+
+    snprintf(out, 256, "int** _temp_ = %s;\n"
+                       "for(int %s = 0; %s < %d){\n"
+                       "    for(int %s = 0; %s < %d){\n"
+                       "        %s[%s][%s] = _temp_[%s][%s];\n"
                        "    }\n"
-                       "}\n", values, rowCount, columnCount,variableName);
+                       "}\n", values, loop_variable1, loop_variable1, rowCount, loop_variable2, loop_variable2,
+                       columnCount, variableName, loop_variable1, loop_variable2, loop_variable1, loop_variable2);
     return out;
 }

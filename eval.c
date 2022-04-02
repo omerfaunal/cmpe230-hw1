@@ -14,7 +14,7 @@ int *typecheck(char **line, int size, char **ptranslated);
 char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount);
 char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3);
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
-char* printId(char* out, char* variableName, int row_count, int column_count);
+char* callPrintId(char* out, char* variableName, int row_count, int column_count);
 char* printSep();
 
 extern int line_number;
@@ -349,7 +349,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
         char *expr_translated = NULL;
         int *expr_dims = typecheck(rpn(line, expr_rpn, 2, size - 3), size - 4, &expr_translated);
         char *final_line = (char*) calloc(512, sizeof(char));
-        return printId(final_line, expr_translated, expr_dims[0], expr_dims[1]);
+        return callPrintId(final_line, expr_translated, expr_dims[0], expr_dims[1]);
     }
 
     if(strcmp(line[0], "printsep") == 0) {
@@ -441,7 +441,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                 error(line_number);
             }
             expr_stack--; char* expr = *expr_stack;
-            snprintf(*expr_stack, 512, "sqrt(%s)", expr);
+            snprintf(*expr_stack, 512, "sqrt_(%s)", expr);
             expr_stack++;
 
         } else if(strcmp(line[i], "choose") == 0) {

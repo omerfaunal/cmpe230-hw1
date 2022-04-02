@@ -11,14 +11,21 @@ char* printSep() {
     return "printf(\"%s\", \"----------\");\n";
 }
 
-char* printId(char* out, char* variableName, int row_count, int column_count) {
-    snprintf(out, 512, "int m = %d;\n"
+char *declarePrintId(char *out) {
+    snprintf(out, 512, "void *printId(int **variable, int row_count, int column_count){\n"
+                       "int m = row_count;\n"
                        "if(m == 0) {\n"
                        "    m += 1;\n"
                        "}\n"
                        "for(int i = 0; i < m; i++){\n"
-                       "    printf(%s[i]);\n"
-                       "}\n", row_count, variableName);
+                       "    printf(variable[i]);\n"
+                       "}\n"
+                       "}\n");
+    return out;
+}
+
+char* callPrintId(char* out, char* variableName, int row_count, int column_count) {
+    snprintf(out, 512, "printId(%s, %s, %s);", variableName, row_count, column_count);
     return out;
 }
 
@@ -55,7 +62,7 @@ char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, ch
 }
 
 char* declareSqrtFunction(char* out) {
-    snprintf(out, 512, "float sqrt(float value) {return sqrtf(value);}\n");
+    snprintf(out, 512, "float sqrt_(float value) {return sqrtf(value);}\n");
     return out;
 }
 
