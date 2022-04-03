@@ -8,6 +8,7 @@ extern struct Matrix* matrixListPointer;
 extern short int scalar_count;
 extern short int matrix_count;
 extern int line_number;
+int tempCount = 0;
 
 void error(int line);
 
@@ -69,12 +70,13 @@ char* matrixAssignment(char* out, char* variableName, char* values, int rowCount
         strcat(loop_variable2, "_");
     }
 
-    snprintf(out, 2048, "int** _temp_ = %s;\n"
+    snprintf(out, 2048, "int** _temp%d = %s;\n"
                        "for(int %s = 0; %s < %d; %s++){\n"
                        "    for(int %s = 0; %s < %d; %s++){\n"
-                       "        %s[%s][%s] = _temp_[%s][%s];\n"
+                       "        %s[%s][%s] = _temp%d[%s][%s];\n"
                        "    }\n"
-                       "}\n", values, loop_variable1, loop_variable1, rowCount, loop_variable1, loop_variable2, loop_variable2,
-                       columnCount, loop_variable2, variableName, loop_variable1, loop_variable2, loop_variable1, loop_variable2);
+                       "}\n",tempCount, values, loop_variable1, loop_variable1, rowCount, loop_variable1, loop_variable2, loop_variable2,
+                       columnCount, loop_variable2, variableName, loop_variable1, loop_variable2,tempCount, loop_variable1, loop_variable2);
+    tempCount += 1;
     return out;
 }

@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    out_file = fopen("../out.c", "w");
+    out_file = fopen("out.c", "w");
     if(out_file == NULL) {
         printf("Cannot open out.c\n");
         return 1;
