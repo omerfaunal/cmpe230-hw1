@@ -61,6 +61,11 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
 
 char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount) {
     // TODO: This should check whether rowCount == columnCount == 0, and if so then do scalar assignment
+    if(rowCount == 0 && columnCount == 0) {
+        rowCount = 1;
+        columnCount = 1;
+    }
+
     char loop_variable1[3] = "i";
     while(strcmp(variableName, loop_variable1) == 0) {
         strcat(loop_variable1, "_");
@@ -70,13 +75,28 @@ char* matrixAssignment(char* out, char* variableName, char* values, int rowCount
         strcat(loop_variable2, "_");
     }
 
-    snprintf(out, 2048, "int** _temp%d = %s;\n"
-                       "for(int %s = 0; %s < %d; %s++){\n"
-                       "    for(int %s = 0; %s < %d; %s++){\n"
-                       "        %s[%s][%s] = _temp%d[%s][%s];\n"
-                       "    }\n"
-                       "}\n",tempCount, values, loop_variable1, loop_variable1, rowCount, loop_variable1, loop_variable2, loop_variable2,
-                       columnCount, loop_variable2, variableName, loop_variable1, loop_variable2,tempCount, loop_variable1, loop_variable2);
+    if(values[0] == '{') {
+        snprintf(out, 2048, "int _temp%d[%d][%d] = %s;\n"
+                            "for(int %s = 0; %s < %d; %s++){\n"
+                            "    for(int %s = 0; %s < %d; %s++){\n"
+                            "        %s[%s][%s] = _temp%d[%s][%s];\n"
+                            "    }\n"
+                            "}\n", tempCount, rowCount, columnCount, values,
+                 loop_variable1, loop_variable1, rowCount, loop_variable1,
+                 loop_variable2, loop_variable2, columnCount, loop_variable2,
+                 variableName, loop_variable1, loop_variable2, tempCount, loop_variable1, loop_variable2);
+    } else {
+        snprintf(out, 2048, "int **_temp%d = %s;\n"
+                            "for(int %s = 0; %s < %d; %s++){\n"
+                            "    for(int %s = 0; %s < %d; %s++){\n"
+                            "        %s[%s][%s] = _temp%d[%s][%s];\n"
+                            "    }\n"
+                            "}\n", tempCount, values,
+                 loop_variable1, loop_variable1, rowCount, loop_variable1,
+                 loop_variable2, loop_variable2, columnCount, loop_variable2,
+                 variableName, loop_variable1, loop_variable2, tempCount, loop_variable1, loop_variable2);
+    }
+
     tempCount += 1;
     return out;
 }

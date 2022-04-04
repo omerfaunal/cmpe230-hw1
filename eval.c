@@ -14,6 +14,12 @@ char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3);
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
 char* callPrintId(char* out, char* variableName, int row_count, int column_count);
 char* printSep();
+char* callSqrt(char* out, char* variableName);
+char* callChoose(char* out, char* expr1, char* expr2, char* expr3, char* expr4);
+char* callTranspose(char* out, char* variableName, int row_count, int column_count);
+char* callAdd(char* out, char* variableName1, char* variableName2, int row_count, int column_count);
+char* callSubtract(char* out, char* variableName1, char* variableName2, int row_count, int column_count);
+char* callMultiply(char* out, char* variableName1, char* variableName2, int row_count1, int column_count1, int row_count2, int column_count2);
 
 extern int line_number;
 extern struct Scalar scalars[];
@@ -390,7 +396,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             }
             expr_stack--; char* expr2 = strdup(*expr_stack);
             expr_stack--; char* expr1 = strdup(*expr_stack);
-            snprintf(*expr_stack, 2048, "multiply(%s, %s, %d, %d, %d, %d)", expr1, expr2, r1, c1, r2, c2);
+            callMultiply(*expr_stack, expr1, expr2, r1, c1, r1, c1);
             expr_stack++;
 
         } else if(strcmp(line[i], "+") == 0 || strcmp(line[i], "-") == 0) {
@@ -409,10 +415,10 @@ int *typecheck(char **line, int size, char **ptranslated) {
             expr_stack--; char* expr1 = strdup(*expr_stack);
             if(strcmp(line[i], "+") == 0) {
                 // Addition
-                snprintf(*expr_stack, 2048, "add(%s, %s, %d, %d)", expr1, expr2, r1, c1);
+                callAdd(*expr_stack, expr1, expr2, r1, c1);
             } else {
                 // Subtraction
-                snprintf(*expr_stack, 2048, "subtract(%s, %s, %d, %d)", expr1, expr2, r1, c1);
+                callSubtract(*expr_stack, expr1, expr2, r1, c1);
             }
             expr_stack++;
 
@@ -424,7 +430,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             stack--; int r1 = (*stack)[0]; int c1 = (*stack)[1];
             (*stack)[0] = c1; (*stack)[1] = r1; stack++;
             expr_stack--; char* expr = strdup(*expr_stack);
-            snprintf(*expr_stack, 2048, "transpose(%s, %d, %d)", expr, r1, c1);
+            callTranspose(*expr_stack, expr, r1, c1);
             expr_stack++;
 
         } else if(strcmp(line[i], "sqrt") == 0) {
@@ -439,7 +445,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                 error(line_number);
             }
             expr_stack--; char* expr = strdup(*expr_stack);
-            snprintf(*expr_stack, 2048, "sqrt_(%s)", expr);
+            callSqrt(*expr_stack, expr);
             expr_stack++;
 
         } else if(strcmp(line[i], "choose") == 0) {
@@ -460,7 +466,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             expr_stack--; char* expr3 = strdup(*expr_stack);
             expr_stack--; char* expr2 = strdup(*expr_stack);
             expr_stack--; char* expr1 = strdup(*expr_stack);
-            snprintf(*expr_stack, 2048, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
+            callChoose(*expr_stack, expr1, expr2, expr3, expr4);
             expr_stack++;
 
         } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
