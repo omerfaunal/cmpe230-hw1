@@ -14,17 +14,21 @@ char* printSep() {
 
 char *declarePrintId(char *out) {
     snprintf(out, 2048, "void *printId(float **variable, int row_count, int column_count){\n"
-                       "if(row_count == 0) {\n"
-                       "    row_count++;\n"
-                       "    column_count++;\n"
-                       "}\n"
-                       "for(int i = 0; i < row_count; i++){\n"
-                       "    for(int j = 0; j < column_count; j++) {\n"
-                       "        printf(\"%%f \", variable[i][j]);\n"
-                       "    }\n"
-                       "    printf(\"\\n\");\n"
-                       "}\n"
-                       "}\n");
+           "if(row_count == 0) {\n"
+           "    row_count++;\n"
+           "    column_count++;\n"
+           "}\n"
+           "for(int i = 0; i < row_count; i++){\n"
+           "    for(int j = 0; j < column_count; j++) {\n"
+           "        if(abs(variable[i][j] - round(variable[i][j]) < 0.000001)) {\n"
+           "        printf(\"%s\\n\",(int) variable[i][j]);\n"
+           "       } \n"
+           "       else {\n"
+           "        printf(\"%s\\n\",(float) variable[i][j]);\n"
+           "       }"
+           "    }\n"
+           "}\n"
+           "}\n", "%d", "%f.");
     return out;
 }
 
