@@ -28,7 +28,7 @@ char *declarePrintId(char *out) {
            "       }"
            "    }\n"
            "}\n"
-           "}\n", "%d", "%f.");
+           "}\n", "%%d", "%%f");
     return out;
 }
 
