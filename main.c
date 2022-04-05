@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     fprintf(out_file, declareChooseFunction(buffer));
     fprintf(out_file, declarePrintId(buffer));
     fprintf(out_file, "int main() {\n");
+    fprintf(out_file, "float _one_[1][1] = {1};\n");
 
     while(fgets(line, 2048, fp) != NULL) {
         char *pcline = &line[0];

@@ -48,9 +48,9 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
     if(strcmp(variableName, "i") == 0) {
         strcat(loop_variable, "_");
     }
-    snprintf(out, 2048, "int** %s = (int**) calloc(%d, sizeof(int*));\n"
+    snprintf(out, 2048, "float** %s = (float**) calloc(%d, sizeof(float*));\n"
                        "    for(int %s = 0; %s < %d; %s++) {\n"
-                       "        %s[%s] = (int*) calloc(%d, sizeof(int));\n"
+                       "        %s[%s] = (float*) calloc(%d, sizeof(float));\n"
                        "    }\n", variableName, rowCount, loop_variable, loop_variable, rowCount, loop_variable,
                        variableName, loop_variable, columnCount);
     *matrixListPointer = matrix;
@@ -76,7 +76,7 @@ char* matrixAssignment(char* out, char* variableName, char* values, int rowCount
     }
 
     if(values[0] == '{') {
-        snprintf(out, 2048, "int _temp%d[%d][%d] = %s;\n"
+        snprintf(out, 2048, "float _temp%d[%d][%d] = %s;\n"
                             "for(int %s = 0; %s < %d; %s++){\n"
                             "    for(int %s = 0; %s < %d; %s++){\n"
                             "        %s[%s][%s] = _temp%d[%s][%s];\n"
@@ -86,7 +86,7 @@ char* matrixAssignment(char* out, char* variableName, char* values, int rowCount
                  loop_variable2, loop_variable2, columnCount, loop_variable2,
                  variableName, loop_variable1, loop_variable2, tempCount, loop_variable1, loop_variable2);
     } else {
-        snprintf(out, 2048, "int **_temp%d = %s;\n"
+        snprintf(out, 2048, "float **_temp%d = %s;\n"
                             "for(int %s = 0; %s < %d; %s++){\n"
                             "    for(int %s = 0; %s < %d; %s++){\n"
                             "        %s[%s][%s] = _temp%d[%s][%s];\n"
