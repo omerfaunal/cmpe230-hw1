@@ -165,6 +165,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
         declaration(temp, line[2], 0, 0);
         if(strcmp(line[3], "in") == 0) {
             // Single for loop
+            for_loop_open = 1;
+
             int start = 4;
             int ptr = 4;
             while(ptr < size && strcmp(line[ptr], ":") != 0) {
@@ -216,6 +218,8 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
         } else if(strcmp(line[3], ",") == 0) {
             // Double for loop
+            for_loop_open = 2;
+
             for(int i = 0; i < 23; i++) {
                 if(strcmp(line[4], terminals[i]) == 0) {
                     error(line_number);
