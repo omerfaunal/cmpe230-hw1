@@ -37,6 +37,10 @@ short int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: Th
 int rpn_size;
 
 char* eval(char **line, short int size) {  // Note that size also contains the newline character at the end of the line.
+    if(strcmp(line[size - 1], "\n") != 0) {
+        size++;
+    }
+
     if(size == 1) {
         return "\n";
     }
