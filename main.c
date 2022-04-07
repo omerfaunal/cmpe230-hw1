@@ -33,7 +33,7 @@ char *declareSubtractFunctionS(char *out);
 char *declareMultiplyFunctionSS(char *out);
 char *declareMultiplyFuctionSM(char *out);
 
-int line_number = 1;
+int line_number = 0;
 FILE *out_file;
 
 int main(int argc, char *argv[]) {
