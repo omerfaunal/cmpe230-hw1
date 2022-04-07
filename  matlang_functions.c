@@ -9,7 +9,7 @@ extern struct Scalar scalars[];
 void error(int line);
 
 char* printSep() {
-    return "printf(\"%s\", \"----------\");\n";
+    return "printf(\"----------\");\n";
 }
 
 char *declarePrintId(char *out) {
@@ -204,12 +204,12 @@ char *declareMultiplyFuctionSM(char *out) {
 }
 
 char* callSqrt(char* out, char* variableName) {
-    snprintf(out, 2048, "sqrt(%s)\n", variableName);
+    snprintf(out, 2048, "sqrt(%s)", variableName);
     return out;
 }
 
 char* callChoose(char* out, char* expr1, char* expr2, char* expr3, char* expr4) {
-    snprintf(out, 2048, "choose(%s, %s, %s, %s)\n", expr1, expr2, expr3, expr4);
+    snprintf(out, 2048, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
     return out;
 }
 
@@ -217,7 +217,7 @@ char* callTranspose(char* out, char* variableName, int row_count, int column_cou
     if(row_count == 0 && column_count == 0) {
         snprintf(out, 2048, variableName);
     } else {
-        snprintf(out, 2048, "transpose(%s, %d, %d)\n", variableName, row_count, column_count);
+        snprintf(out, 2048, "transpose(%s, %d, %d)", variableName, row_count, column_count);
     }
     return out;
 }

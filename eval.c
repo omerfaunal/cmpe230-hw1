@@ -34,6 +34,8 @@ extern FILE *out_file;
 short int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
                               // 2: There is a double for loop currently open.
 
+int rpn_size;
+
 char* eval(char **line, short int size) {  // Note that size also contains the newline character at the end of the line.
     if(size == 1) {
         return "\n";
@@ -385,7 +387,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
     int (*stack_begin)[2] = stack;
     char **expr_stack = (char**) calloc(size, sizeof(char*));
     char **expr_stack_begin = expr_stack;
-    for(int i = 0; i < size; i++) {
+    for(int i = 0; i < rpn_size; i++) {
         if(strcmp(line[i], "*") == 0) {
             // Multiplication
             if(stack - stack_begin < 2) {
@@ -402,7 +404,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
             }
             expr_stack--; char* expr2 = strdup(*expr_stack);
             expr_stack--; char* expr1 = strdup(*expr_stack);
-            callMultiply(*expr_stack, expr1, expr2, r1, c1, r1, c1);
+            callMultiply(*expr_stack, expr1, expr2, r1, c1, r2, c2);
             expr_stack++;
 
         } else if(strcmp(line[i], "+") == 0 || strcmp(line[i], "-") == 0) {
@@ -570,6 +572,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
     // This function uses Dijkstra's Shunting-yard Algorithm to convert a mathematical expression to Reverse Polish
     // Notation. int start_index and int end_index specify where the expression to be converted is situated inside the
     // line.
+    rpn_size = end_index - start_index + 1;
     short int out_index = 0;
     char **operator_stack = (char**) calloc(end_index - start_index + 1, sizeof(char*));
     char **operator_stack_begin = operator_stack;
@@ -601,6 +604,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
             // If the token is a left parenthesis
             *operator_stack = token;
             operator_stack++;
+            rpn_size--;
         } else if(strcmp(token, ")") == 0) {
             // If the token is a right parenthesis
             while(operator_stack != operator_stack_begin && strcmp(*(operator_stack - 1), "(") != 0) {
@@ -618,6 +622,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
                 out[out_index] = *operator_stack;
                 out_index++;
             }
+            rpn_size--;
         } else if(strcmp(token, "[") == 0) {
             // If the token is a left bracket
             *operator_stack = token;
@@ -643,6 +648,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
                 out_index++;
             }
         } else if(strcmp(token, ",") == 0) {
+            rpn_size--;
             continue;
         } else {
             error(line_number);

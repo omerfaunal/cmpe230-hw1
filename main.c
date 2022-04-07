@@ -181,6 +181,7 @@ int main(int argc, char *argv[]) {
                         error(line_number);
                     }
                 }
+                is_float = 0;
                 *pcsepline = ' ';
                 pcsepline++;
                 while(pctoken != &token[0]) {
