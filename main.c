@@ -27,6 +27,11 @@ char* declareAddFunction(char* out);
 char* declareSubtractFunction(char* out);
 char* declareMultiplyFunction(char* out);
 char *declarePrintId(char *out);
+char *declarePrintIdS(char *out);
+char *declareAddFunctionS(char *out);
+char *declareSubtractFunctionS(char *out);
+char *declareMultiplyFunctionSS(char *out);
+char *declareMultiplyFuctionSM(char *out);
 
 int line_number = 1;
 FILE *out_file;
@@ -58,12 +63,17 @@ int main(int argc, char *argv[]) {
                       "#include <stdlib.h>\n"
                       "#include <math.h>\n");
     fprintf(out_file, declareAddFunction(buffer));
+    fprintf(out_file, declareAddFunctionS(buffer));
     fprintf(out_file, declareSubtractFunction(buffer));
+    fprintf(out_file, declareSubtractFunctionS(buffer));
     fprintf(out_file, declareMultiplyFunction(buffer));
+    fprintf(out_file, declareMultiplyFunctionSS(buffer));
+    fprintf(out_file, declareMultiplyFuctionSM(buffer));
     fprintf(out_file, declareSqrtFunction(buffer));
     fprintf(out_file, declareTransposeFunction(buffer));
     fprintf(out_file, declareChooseFunction(buffer));
     fprintf(out_file, declarePrintId(buffer));
+    fprintf(out_file, declarePrintIdS(buffer));
     fprintf(out_file, "int main() {\n");
     fprintf(out_file, "float _one_[1][1] = {1};\n");
 
