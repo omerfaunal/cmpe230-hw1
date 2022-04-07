@@ -77,7 +77,7 @@ char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3) {
 }
 
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6) {
-    snprintf(out, 2048, "for(float %s = %s; %s <= %s; %s += %s ) { \n for(float %s = %s; %s <= %s; %s += %s )\n",
+    snprintf(out, 2048, "for(float %s = %s; %s <= %s; %s += %s ) { \n for(float %s = %s; %s <= %s; %s += %s ) {\n",
              id1, expr1, id1, expr2, id1, expr3, id2, expr4, id2, expr5, id2, expr6);
     return out;
 }

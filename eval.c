@@ -344,12 +344,12 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
             for_loop_open = 0;
             matrix_count--;
             matrixListPointer--;
-            return "}";
+            return "}\n";
         } else if(for_loop_open == 2) {
             for_loop_open = 0;
             matrix_count -= 2;
             matrixListPointer -= 2;
-            return "}}";
+            return "}}\n";
         } else{
             error(line_number);
             return "error";
