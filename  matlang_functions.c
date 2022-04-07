@@ -13,7 +13,7 @@ char* printSep() {
 }
 
 char *declarePrintId(char *out) {
-    snprintf(out, 2048, "void *printId(float **variable, int row_count, int column_count){\n"
+    snprintf(out, 2048, "void printId(float **variable, int row_count, int column_count){\n"
            "for(int i = 0; i < row_count; i++){\n"
            "    for(int j = 0; j < column_count; j++) {\n"
            "        if(fabs(variable[i][j] - round(variable[i][j])) < 0.000001) {\n"
@@ -29,7 +29,7 @@ char *declarePrintId(char *out) {
 }
 
 char *declarePrintIdS(char *out) {
-    snprintf(out, 2048, "void *printIdS(float variable){\n"
+    snprintf(out, 2048, "void printIdS(float variable){\n"
                         "    if(fabs(variable - round(variable)) < 0.000001) {\n"
                         "        printf(\"%s\\n\",(int) round(variable));\n"
                         "    } \n"
@@ -42,7 +42,7 @@ char *declarePrintIdS(char *out) {
 
 char* callPrintId(char* out, char* variableName, int row_count, int column_count) {
     if(row_count == 0 && column_count == 0) {
-        snprintf(out, 2048, "printIdS(%s)", variableName);
+        snprintf(out, 2048, "printIdS(%s);\n", variableName);
     } else {
         snprintf(out, 2048, "printId(%s, %d, %d);\n", variableName, row_count, column_count);
     }
@@ -168,7 +168,6 @@ char *declareSubtractFunctionS(char *out) {
 
 char* declareMultiplyFunction(char* out) {
     snprintf(out, 2048, "float** multiply(float** arr1, float** arr2, int row_count1, int column_count1, int row_count2, int column_count2) {\n"
-                        "    float** outArr2 = (float**) calloc(row_count1, sizeof(float*));\n"
                         "    float** outArr3 = (float**) calloc(row_count1, sizeof(float*));\n"
                         "    for (int i = 0; i < row_count1; ++i) {\n"
                         "        outArr3[i] = (float*) calloc(column_count2, sizeof(float));\n"

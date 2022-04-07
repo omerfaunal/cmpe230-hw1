@@ -48,10 +48,10 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount) 
                             "        %s[%s] = (float*) calloc(%d, sizeof(float));\n"
                             "    }\n", variableName, rowCount, loop_variable, loop_variable, rowCount, loop_variable,
                  variableName, loop_variable, columnCount);
-        *matrixListPointer = matrix;
-        matrixListPointer += 1;
-        matrix_count++;
     }
+    *matrixListPointer = matrix;
+    matrixListPointer += 1;
+    matrix_count++;
 
     return out;
 }

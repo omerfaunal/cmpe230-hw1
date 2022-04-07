@@ -478,11 +478,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
         } else if(isdigit((int) line[i][0]) || line[i][0] == '.') {
             // Number
             (*stack)[0] = 0; (*stack)[1] = 0; stack++;
-            fprintf(out_file, "float _temp%d[1][1] = {%s};\n", tempCount, line[i]);
-            char *out = (char*) calloc(2048, sizeof(char));
-            snprintf(out, 2048, "_temp%d", tempCount);
-            tempCount++;
-            *expr_stack = strdup(out); expr_stack++;
+            *expr_stack = strdup(line[i]); expr_stack++;
 
         } else if(strcmp(line[i], "[") == 0 || strcmp(line[i], "]") == 0) {
             // Bracket
@@ -509,9 +505,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                     }
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
                     expr_stack -= 2; char *expr = strdup(*expr_stack); expr_stack--;
-                    fprintf(out_file, "float _temp%d[1][1] = {%s[(int) subtract(%s, _one_, 0, 0)[0][0]][0]};\n", tempCount, line[i], expr);
-                    snprintf(*expr_stack, 2048, "_temp%d", tempCount);
-                    tempCount++;
+                    snprintf(*expr_stack, 2048, "%s[(int) floor(subtractS(%s, 1))][0]", line[i], expr);
                     expr_stack++;
 
                 } else if(expr_stack - expr_stack_begin >= 4 && strcmp(*(expr_stack - 4), "[") == 0) {
@@ -527,9 +521,7 @@ int *typecheck(char **line, int size, char **ptranslated) {
                     (*stack)[0] = 0; (*stack)[1] = 0; stack++;
                     expr_stack -= 2; char *expr2 = strdup(*expr_stack);
                     expr_stack--; char *expr1 = strdup(*expr_stack); expr_stack--;
-                    fprintf(out_file, "float _temp%d[1][1] = %s[(int) subtract(%s, _one_, 0, 0)[0][0]][(int) subtract(%s, _one_, 0, 0)[0][0]];\n", tempCount, line[i], expr1, expr2);
-                    snprintf(*expr_stack, 2048, "_temp%d", tempCount);
-                    tempCount++;
+                    snprintf(*expr_stack, 2048, "%s[(int) floor(subtractS(%s, 1))][(int) floor(subtractS(%s, 1))]", line[i], expr1, expr2);
                     expr_stack++;
 
                 } else {
