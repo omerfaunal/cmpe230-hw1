@@ -62,18 +62,18 @@ int main(int argc, char *argv[]) {
     fprintf(out_file, "#include <stdio.h>\n"
                       "#include <stdlib.h>\n"
                       "#include <math.h>\n");
-    fprintf(out_file, declareAddFunction(buffer));
-    fprintf(out_file, declareAddFunctionS(buffer));
-    fprintf(out_file, declareSubtractFunction(buffer));
-    fprintf(out_file, declareSubtractFunctionS(buffer));
-    fprintf(out_file, declareMultiplyFunction(buffer));
-    fprintf(out_file, declareMultiplyFunctionSS(buffer));
-    fprintf(out_file, declareMultiplyFuctionSM(buffer));
-    fprintf(out_file, declareSqrtFunction(buffer));
-    fprintf(out_file, declareTransposeFunction(buffer));
-    fprintf(out_file, declareChooseFunction(buffer));
-    fprintf(out_file, declarePrintId(buffer));
-    fprintf(out_file, declarePrintIdS(buffer));
+    fprintf(out_file, "%s", declareAddFunction(buffer));
+    fprintf(out_file, "%s", declareAddFunctionS(buffer));
+    fprintf(out_file, "%s", declareSubtractFunction(buffer));
+    fprintf(out_file, "%s", declareSubtractFunctionS(buffer));
+    fprintf(out_file, "%s", declareMultiplyFunction(buffer));
+    fprintf(out_file, "%s", declareMultiplyFunctionSS(buffer));
+    fprintf(out_file, "%s", declareMultiplyFuctionSM(buffer));
+    fprintf(out_file, "%s", declareSqrtFunction(buffer));
+    fprintf(out_file, "%s", declareTransposeFunction(buffer));
+    fprintf(out_file, "%s", declareChooseFunction(buffer));
+    fprintf(out_file, "%s", declarePrintId(buffer));
+    fprintf(out_file, "%s", declarePrintIdS(buffer));
     fprintf(out_file, "int main() {\n");
     fprintf(out_file, "float _one_[1][1] = {1};\n");
 

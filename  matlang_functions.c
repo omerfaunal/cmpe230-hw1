@@ -163,6 +163,7 @@ char *declareSubtractFunctionS(char *out) {
     snprintf(out, 2048, "float subtractS(float val1, float val2) {\n"
                         "   return val1 - val2;\n"
                         "}\n");
+    return out;
 }
 
 char* declareMultiplyFunction(char* out) {
@@ -186,6 +187,7 @@ char *declareMultiplyFunctionSS(char *out) {
     snprintf(out, 2048, "float multiplySS(float val1, float val2) {\n"
                         "   return val1 * val2;\n"
                         "}\n");
+    return out;
 }
 
 char *declareMultiplyFuctionSM(char *out) {
@@ -199,6 +201,7 @@ char *declareMultiplyFuctionSM(char *out) {
                         "    }\n"
                         "    return outArr;\n"
                         "}\n");
+    return out;
 }
 
 char* callSqrt(char* out, char* variableName) {
