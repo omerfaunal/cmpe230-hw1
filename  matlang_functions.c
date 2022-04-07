@@ -9,7 +9,7 @@ extern struct Scalar scalars[];
 void error(int line);
 
 char* printSep() {
-    return "printf(\"----------\");\n";
+    return "printf(\"----------\\n\");\n";
 }
 
 char *declarePrintId(char *out) {
