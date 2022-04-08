@@ -1,7 +1,4 @@
-#include <math.h>
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "structs.h"
 
 extern struct Scalar scalars[];
@@ -9,7 +6,7 @@ extern struct Scalar scalars[];
 void error(int line);
 
 char* printSep() {
-    return "printf(\"----------\\n\");\n";
+    return "printf(\"------------\\n\");\n";
 }
 
 char *declarePrintId(char *out) {
