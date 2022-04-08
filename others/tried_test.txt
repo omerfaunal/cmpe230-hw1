@@ -7,3 +7,6 @@ Gecilen testler
 -Boyuta uymayan tanimlamalar (Matrixe yanlis boyutta girdi verme)
 -Birden fazla kez declare etme, her zaman en sondaki dogru degeri aliyor
 - *, +, -, trr(x) gibi hatalar
+
+Gecilemeyen testler
+YOK
