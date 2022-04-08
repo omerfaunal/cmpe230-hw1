@@ -29,7 +29,6 @@ extern int matrix_count;
 extern char *terminals[];
 extern struct Matrix* matrixListPointer;
 extern int tempCount;
-extern FILE *out_file;
 
 int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
                               // 2: There is a double for loop currently open.

@@ -1,7 +1,3 @@
-//
-// Created by Eren on 26.03.2022.
-//
-
 #ifndef CMPE230_HW1_STRUCTS_H
 #define CMPE230_HW1_STRUCTS_H
 
