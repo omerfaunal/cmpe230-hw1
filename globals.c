@@ -17,6 +17,10 @@ int line_number = 0;
 FILE *out_file;
 char out_file_name[4096];
 
+/*
+ * Given a line number
+ * Simply prints "Error (Line number)"
+ */
 void error(int line) {
     printf("Error (Line %d)\n", line);
     fclose(out_file);

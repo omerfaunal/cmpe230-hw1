@@ -9,7 +9,7 @@ char* declaration(char* out, char* variableName, int columnCount, int rowCount);
 char **rpn(char **line, char **out, int start_index, int end_index);
 int *get_dimensions(char *name, int *dimensions);
 int *typecheck(char **line, int size, char **ptranslated);
-char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount);
+char* assignment(char* out, char* variableName, char* values, int rowCount, int columnCount);
 char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3);
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6);
 char* callPrintId(char* out, char* variableName, int row_count, int column_count);
@@ -116,7 +116,7 @@ char* eval(char **line, int size) {
             int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
             if(rhs_dims[0] == 0 && rhs_dims[1] == 0) {
                 char *final_line = (char*) calloc(2048, sizeof(char));
-                return matrixAssignment(final_line, line[0], translated, 0, 0);
+                return assignment(final_line, line[0], translated, 0, 0);
             } else {
                 error(line_number);
             }
@@ -148,7 +148,7 @@ char* eval(char **line, int size) {
                 strcat(array_literal, "}");
 
                 char *final_line = (char*) calloc(2048, sizeof(char));
-                return matrixAssignment(final_line, line[0], array_literal, dimensions[0], dimensions[1]);
+                return assignment(final_line, line[0], array_literal, dimensions[0], dimensions[1]);
 
             } else {
                 // Non-explicit matrix assignment or indexed assignment
@@ -175,7 +175,7 @@ char* eval(char **line, int size) {
                     char *final_line = (char *) calloc(2048, sizeof(char));
                     if(equals_sign_location == 1) {
                         // Non-explicit matrix assignment
-                        return matrixAssignment(final_line, line[0], translated_rhs, dimensions[0], dimensions[1]);
+                        return assignment(final_line, line[0], translated_rhs, dimensions[0], dimensions[1]);
                     } else {
                         // Indexed matrix assignment (e.g. M[2,1] = 7)
                         snprintf(final_line, 2048, "%s = %s;\n", translated_lhs, translated_rhs);
