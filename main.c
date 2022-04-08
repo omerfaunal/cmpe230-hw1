@@ -13,13 +13,13 @@ const char *terminals[23] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "
 
 struct Matrix matrices[MAX_LINE];  // Matrix variables will be stored here.
 struct Matrix* matrixListPointer = matrices; //This is a pointer for traversing matrices list.
-short int matrix_count = 0;
+int matrix_count = 0;
 struct Scalar scalars[MAX_LINE];  // Scalar variables will be stored here.
 struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing scalars list.
-short int scalar_count = 0;
+int scalar_count = 0;
 
 void error(int line);
-char* eval(char** line, short int size);
+char* eval(char** line, int size);
 char* declareSqrtFunction(char* out);
 char* declareChooseFunction(char* out);
 char* declareTransposeFunction(char* out);
@@ -86,9 +86,9 @@ int main(int argc, char *argv[]) {
         char *pcsepline = &sepline[0];
         char token[2048] = {'\0'};
         char *pctoken = &token[0];
-        short int is_float = 0;
-        short int new_declaration = 0;
-        short int for_loop = 0;
+        int is_float = 0;
+        int new_declaration = 0;
+        int for_loop = 0;
         while(*pcline != '\0') {
             if(*pcline == '\n' || *pcline == '#') {
                 if(pctoken != &token[0]) {
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
         }
 
         char **final_line = (char**) calloc(2048, sizeof(char*));
-        short int token_ctr = 0;
+        int token_ctr = 0;
         final_line[token_ctr] = strtok(sepline, " ");
         token_ctr++;
         char *final_token;

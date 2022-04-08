@@ -6,7 +6,7 @@
 
 void error(int line);
 char* declaration(char* out, char* variableName, int columnCount, int rowCount);
-char **rpn(char **line, char **out, short int start_index, short int end_index);
+char **rpn(char **line, char **out, int start_index, int end_index);
 int *get_dimensions(char *name, int *dimensions);
 int *typecheck(char **line, int size, char **ptranslated);
 char* matrixAssignment(char* out, char* variableName, char* values, int rowCount, int columnCount);
@@ -24,22 +24,22 @@ char* callMultiply(char* out, char* variableName1, char* variableName2, int row_
 extern int line_number;
 extern struct Scalar scalars[];
 extern struct Matrix matrices[];
-extern short int scalar_count;
-extern short int matrix_count;
+extern int scalar_count;
+extern int matrix_count;
 extern char *terminals[];
 extern struct Matrix* matrixListPointer;
 extern int tempCount;
 extern FILE *out_file;
 
-short int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
+int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
                               // 2: There is a double for loop currently open.
 
 int rpn_size;  // When an expression is being converted to postfix notation, this variable stores the number of elements
                // in the postfix expression (it is different from the number of elements in the infix notation because
                // parentheses and commas aren't included in postfix notation).
 
-char* eval(char **line, short int size) {
-    // Basically, this is the parent function that evaluates the right-hand side during an assignment. short int size
+char* eval(char **line, int size) {
+    // Basically, this is the parent function that evaluates the right-hand side during an assignment. int size
     // is the number of elements in the right-hand side of the assignment. Note that size also contains the newline
     // character at the end of the line.
     if(strcmp(line[size - 1], "\n") != 0) {
@@ -175,8 +175,10 @@ char* eval(char **line, short int size) {
                 if (lhs_dims[0] == rhs_dims[0] && lhs_dims[1] == rhs_dims[1]) {
                     char *final_line = (char *) calloc(2048, sizeof(char));
                     if(equals_sign_location == 1) {
+                        // Non-explicit matrix assignment
                         return matrixAssignment(final_line, line[0], translated_rhs, dimensions[0], dimensions[1]);
                     } else {
+                        // Indexed matrix assignment (e.g. M[2,1] = 7)
                         snprintf(final_line, 2048, "%s = %s;\n", translated_lhs, translated_rhs);
                         return final_line;
                     }
@@ -609,13 +611,13 @@ int *get_dimensions(char *name, int *dimensions) {
     return NULL;
 }
 
-char **rpn(char **line, char **out, short int start_index, short int end_index) {
+char **rpn(char **line, char **out, int start_index, int end_index) {
     // This function uses a modified version of Dijkstra's Shunting-yard Algorithm to convert a mathematical expression
     // to Reverse Polish Notation. The algorithm is modified in a way that allows multiple-argument functions (in our
     // case, matrix indexing) to be present. int start_index and int end_index specify where the expression to be
     // converted is situated inside the line.
     rpn_size = end_index - start_index + 1;
-    short int out_index = 0;
+    int out_index = 0;
     char **operator_stack = (char**) calloc(end_index - start_index + 1, sizeof(char*));
     char **operator_stack_begin = operator_stack;
     for(int i = start_index; i <= end_index; i++) {

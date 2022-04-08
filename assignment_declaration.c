@@ -5,8 +5,8 @@
 extern struct Scalar scalars[];
 extern struct Scalar* scalarListPointer;
 extern struct Matrix* matrixListPointer;
-extern short int scalar_count;
-extern short int matrix_count;
+extern int scalar_count;
+extern int matrix_count;
 extern int line_number;
 int tempCount = 0;
 
