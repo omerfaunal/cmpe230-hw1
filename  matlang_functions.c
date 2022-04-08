@@ -16,7 +16,7 @@ char *declarePrintId(char *out) {
     snprintf(out, 2048, "void printId(float **variable, int row_count, int column_count){\n"
            "for(int i = 0; i < row_count; i++){\n"
            "    for(int j = 0; j < column_count; j++) {\n"
-           "        if(fabs(variable[i][j] - round(variable[i][j])) < 0.000001) {\n"
+           "        if(fabs(variable[i][j] - round(variable[i][j])) < 0.0000005) {\n"
            "        printf(\"%s\\n\",(int) round(variable[i][j]));\n"
            "       } \n"
            "       else {\n"
@@ -30,7 +30,7 @@ char *declarePrintId(char *out) {
 
 char *declarePrintIdS(char *out) {
     snprintf(out, 2048, "void printIdS(float variable){\n"
-                        "    if(fabs(variable - round(variable)) < 0.000001) {\n"
+                        "    if(fabs(variable - round(variable)) < 0.0000005) {\n"
                         "        printf(\"%s\\n\",(int) round(variable));\n"
                         "    } \n"
                         "    else {\n"
