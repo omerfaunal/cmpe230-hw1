@@ -1,0 +1,9 @@
+Gecilen testler
+-Assign edilmis bir vectoru tekrar assign etme
+-Assign edilmis bir matrixi tekrar assign etme
+-Assign edilmis bir scalari tekrar assign etme
+-Yanlis type kullanarak aassignmentler
+
+-Boyuta uymayan tanimlamalar (Matrixe yanlis boyutta girdi verme)
+-Birden fazla kez declare etme, her zaman en sondaki dogru degeri aliyor
+- *, +, -, trr(x) gibi hatalar
