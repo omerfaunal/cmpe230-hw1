@@ -17,12 +17,13 @@ char *declarePrintId(char *out) {
            "for(int i = 0; i < row_count; i++){\n"
            "    for(int j = 0; j < column_count; j++) {\n"
            "        if(fabs(variable[i][j] - round(variable[i][j])) < 0.0000005) {\n"
-           "        printf(\"%s\\n\",(int) round(variable[i][j]));\n"
+           "        printf(\"%s \",(int) round(variable[i][j]));\n"
            "       } \n"
            "       else {\n"
-           "        printf(\"%s\\n\",(float) variable[i][j]);\n"
+           "        printf(\"%s \",(float) variable[i][j]);\n"
            "       }"
            "    }\n"
+           "    printf(\"\\n\");\n"
            "}\n"
            "}\n", "%d", "%f");
     return out;
