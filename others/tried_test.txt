@@ -14,6 +14,7 @@ Gecilen testler
 -Birden fazla satira yayilmis tek declaration
 
 -Nested for loop
+-Yanlis sayida arguman almis fonksiyon
 
 Gecilemeyen testler
 YOK
