@@ -15,6 +15,7 @@ Gecilen testler
 
 -Nested for loop
 -Yanlis sayida arguman almis fonksiyon
+-Binary operatorler arasinda islem onceligi duzgun calisiyor gibi, AMA DAHA KOMPLEKS TESTLER DENENMELI
 
 Gecilemeyen testler
 YOK
