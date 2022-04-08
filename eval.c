@@ -34,14 +34,22 @@ extern FILE *out_file;
 short int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
                               // 2: There is a double for loop currently open.
 
-int rpn_size;
+int rpn_size;  // When an expression is being converted to postfix notation, this variable stores the number of elements
+               // in the postfix expression (it is different from the number of elements in the infix notation because
+               // parentheses and commas aren't included in postfix notation).
 
-char* eval(char **line, short int size) {  // Note that size also contains the newline character at the end of the line.
+char* eval(char **line, short int size) {
+    // Basically, this is the parent function that evaluates the right-hand side during an assignment. short int size
+    // is the number of elements in the right-hand side of the assignment. Note that size also contains the newline
+    // character at the end of the line.
     if(strcmp(line[size - 1], "\n") != 0) {
+        // If there is no newline character at the end of the line (i.e. when it is the last line in the .mat file), we
+        // increment size by 1 to compensate for it.
         size++;
     }
 
     if(size == 1) {
+        // When the line is blank
         return "\n";
     }
 
@@ -90,6 +98,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 
     int dimensions[2];
     if(get_dimensions(line[0], dimensions) != NULL) {
+        // The code enters this branch if the first symbol of the line is a variable. This indicates an assignment line.
         if(dimensions[0] == 0 && dimensions[1] == 0) {
             // Scalar assignment
             if (size < 4 || strcmp(line[1], "=") != 0) {
@@ -377,6 +386,7 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
         return printSep();
     }
 
+    // If the line doesn't match any of the patterns above, then the line can't be legal in the Matlang language.
     error(line_number);
     return "error";
 
@@ -385,12 +395,18 @@ char* eval(char **line, short int size) {  // Note that size also contains the n
 int *typecheck(char **line, int size, char **ptranslated) {
     // This function translates a given expression from Matlang to C. During translation, it also does typechecking.
     // If a type error is encountered, the error() function is called and translation stops. Otherwise, the translated
-    // expression is stored in char *translated.
-    // char **line is the list of tokens of the expression in Reverse Polish Notation.
+    // expression is stored in char *translated. char **line is the list of tokens of the expression in Reverse Polish
+    // Notation. At the end of the function, the dimensions of the expression are returned, and the translated version
+    // of the expression is stored inside char **ptranslated.
+
+    // The dimensions of the expressions are stored in this stack:
     int (*stack)[2] = (int(*)[2]) calloc(size, sizeof(int[2]));
     int (*stack_begin)[2] = stack;
+
+    // The postfix versions of the expressions are stored in this stack:
     char **expr_stack = (char**) calloc(size, sizeof(char*));
     char **expr_stack_begin = expr_stack;
+
     for(int i = 0; i < rpn_size; i++) {
         if(strcmp(line[i], "*") == 0) {
             // Multiplication
@@ -492,7 +508,6 @@ int *typecheck(char **line, int size, char **ptranslated) {
 
         } else {
             // Variable or error
-
             int dim[2];
             if(get_dimensions(line[i], dim) == NULL) {
                 error(line_number);
@@ -540,21 +555,20 @@ int *typecheck(char **line, int size, char **ptranslated) {
         }
     }
 
+    // When translation / typechecking ends, the stack should contain exactly 1 expression (which is the final
+    // translated version of the starting expression). If this is not the case, then there is an error.
     if(stack - stack_begin != 1) {
         error(line_number);
     }
 
     int *out = (int*) calloc(2, sizeof(int));
     out[0] = (*stack_begin)[0]; out[1] = (*stack_begin)[1];
-    // TODO: Why do these free's cause problems?
-//    free(stack_begin);
     *ptranslated = strdup(*expr_stack_begin);
-//    free(expr_stack_begin);
     return out;
 }
 
 int *get_dimensions(char *name, int *dimensions) {
-    // This returns the dimensions of a variable if it exists, or NULL otherwise.
+    // This function returns the dimensions of a variable if it exists, or NULL otherwise.
     for(int i = 0; i < scalar_count; i++) {
         if(strcmp(name, scalars[i].name) == 0) {
             dimensions[0] = 0;
@@ -573,9 +587,10 @@ int *get_dimensions(char *name, int *dimensions) {
 }
 
 char **rpn(char **line, char **out, short int start_index, short int end_index) {
-    // This function uses Dijkstra's Shunting-yard Algorithm to convert a mathematical expression to Reverse Polish
-    // Notation. int start_index and int end_index specify where the expression to be converted is situated inside the
-    // line.
+    // This function uses a modified version of Dijkstra's Shunting-yard Algorithm to convert a mathematical expression
+    // to Reverse Polish Notation. The algorithm is modified in a way that allows multiple-argument functions (in our
+    // case, matrix indexing) to be present. int start_index and int end_index specify where the expression to be
+    // converted is situated inside the line.
     rpn_size = end_index - start_index + 1;
     short int out_index = 0;
     char **operator_stack = (char**) calloc(end_index - start_index + 1, sizeof(char*));
@@ -585,7 +600,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
         int dimensions[2];
         if(isdigit((int) token[0]) || token[0] == '.' ||
         (get_dimensions(token, dimensions) != NULL && (i == end_index || strcmp(line[i + 1], "[") != 0))) {
-            // If the token is a number or variable
+            // If the token is a number or a variable that is not being indexed
             out[out_index] = token;
             out_index++;
         } else if(strcmp(token, "tr") == 0 || strcmp(token, "sqrt") == 0 || strcmp(token, "choose") == 0 ||
@@ -652,6 +667,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
                 out_index++;
             }
         } else if(strcmp(token, ",") == 0) {
+            // If the token is a comma
             rpn_size--;
             while(operator_stack != operator_stack_begin && (strcmp(*(operator_stack - 1), "*") == 0 || strcmp(*(operator_stack - 1), "-") == 0 ||
             strcmp(*(operator_stack - 1), "+") == 0)) {
@@ -660,6 +676,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
                 out_index++;
             }
         } else {
+            // Unidentified token
             error(line_number);
         }
     }
