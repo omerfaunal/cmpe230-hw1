@@ -4,20 +4,6 @@
 #include <stdlib.h>
 #include "structs.h"
 
-#define MAX_LINE 256
-
-const char *terminals[23] = {"scalar", "vector", "matrix", "[", "]", ",", "{", "}",
-                             "*", "+", "-", "tr", "(", ")", "sqrt", "choose",
-                             "#", "for", "in", ":", "printsep", "print", "="};
-                            // Note that numeric characters and variable names aren't included here.
-
-struct Matrix matrices[MAX_LINE];  // Matrix variables will be stored here.
-struct Matrix* matrixListPointer = matrices; //This is a pointer for traversing matrices list.
-int matrix_count = 0;
-struct Scalar scalars[MAX_LINE];  // Scalar variables will be stored here.
-struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing scalars list.
-int scalar_count = 0;
-
 void error(int line);
 char* eval(char** line, int size);
 char* declareSqrtFunction(char* out);
@@ -33,9 +19,14 @@ char *declareSubtractFunctionS(char *out);
 char *declareMultiplyFunctionSS(char *out);
 char *declareMultiplyFuctionSM(char *out);
 
-int line_number = 0;
-FILE *out_file;
-char out_file_name[4096];
+extern const char *terminals[];
+extern char out_file_name[];
+extern FILE *out_file;
+extern int line_number;
+extern int scalar_count;
+extern struct Scalar scalars[];
+extern int matrix_count;
+extern struct Matrix matrices[];
 
 int main(int argc, char *argv[]) {
 
@@ -257,12 +248,4 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     fclose(out_file);
     return 0;
-}
-
-
-void error(int line) {
-    printf("Error (Line %d)\n", line);
-    fclose(out_file);
-    remove(out_file_name);
-    exit(EXIT_FAILURE);
 }
