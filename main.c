@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
         }
 
         final_line = (char**) realloc(final_line, token_ctr * sizeof(char*));
-        fprintf(out_file, eval(final_line, token_ctr));
+        fprintf(out_file, "%s", eval(final_line, token_ctr));
 
         line_number++;
     }
