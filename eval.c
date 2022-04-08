@@ -53,19 +53,22 @@ char* eval(char **line, short int size) {
         return "\n";
     }
 
+    int dimensions[2];
+
     // Scalar Declaration
-    // TODO: What to do when a previously declared value is declared again?
     if(strcmp(line[0], "scalar") == 0) {
         if(size != 3) {
             error(line_number);
             return "error";
+        }
+        if(get_dimensions(line[1], dimensions) != NULL) {
+            error(line_number);
         }
         char out[2048];
         return declaration(out, line[1], 0, 0);
     }
 
     // Vector declaration
-    // TODO: What to do when a previously declared value is declared again?
     if(strcmp(line[0], "vector") == 0) {
         if(size != 6 || strcmp(line[2], "[") != 0 || strcmp(line[4], "]") != 0) {
             error(line_number);
@@ -75,13 +78,15 @@ char* eval(char **line, short int size) {
             error(line_number);
             return "error";
         }
+        if(get_dimensions(line[1], dimensions) != NULL) {
+            error(line_number);
+        }
         char out[2048];
         int row_count = atoi(line[3]);
         return declaration(out, line[1], 1, row_count);
     }
 
     // Matrix declaration
-    // TODO: What to do when a previously declared value is declared again?
     if(strcmp(line[0], "matrix") == 0) {
         if(size != 8 || strcmp(line[2], "[") != 0 || strcmp(line[4], ",") != 0 || strcmp(line[6], "]") != 0) {
             error(line_number);
@@ -91,12 +96,14 @@ char* eval(char **line, short int size) {
             error(line_number);
             return "error";
         }
+        if(get_dimensions(line[1], dimensions) != NULL) {
+            error(line_number);
+        }
         char out[2048];
         return declaration(out, line[1], atoi(line[5]), atoi(line[3]));
     }
 
 
-    int dimensions[2];
     if(get_dimensions(line[0], dimensions) != NULL) {
         // The code enters this branch if the first symbol of the line is a variable. This indicates an assignment line.
         if(dimensions[0] == 0 && dimensions[1] == 0) {

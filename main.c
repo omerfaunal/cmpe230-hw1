@@ -35,6 +35,7 @@ char *declareMultiplyFuctionSM(char *out);
 
 int line_number = 0;
 FILE *out_file;
+char out_file_name[4096];
 
 int main(int argc, char *argv[]) {
 
@@ -52,7 +53,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    out_file = fopen("out.c", "w");
+    strcpy(out_file_name, argv[1]);
+    strcpy(out_file_name + strlen(argv[1]) - 3, "c");
+
+    out_file = fopen(out_file_name, "w");
     if(out_file == NULL) {
         printf("Cannot open out.c\n");
         return 1;
@@ -86,8 +90,6 @@ int main(int argc, char *argv[]) {
         short int new_declaration = 0;
         short int for_loop = 0;
         while(*pcline != '\0') {
-            // TODO: matrixa must be invalid.
-
             if(*pcline == '\n' || *pcline == '#') {
                 if(pctoken != &token[0]) {
                     error(line_number);
@@ -259,8 +261,8 @@ int main(int argc, char *argv[]) {
 
 
 void error(int line) {
-    //TODO
     printf("Error (Line %d)\n", line);
     fclose(out_file);
+    remove(out_file_name);
     exit(EXIT_FAILURE);
 }
