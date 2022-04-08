@@ -31,7 +31,7 @@ char *declarePrintIdS(char *out);
 char *declareAddFunctionS(char *out);
 char *declareSubtractFunctionS(char *out);
 char *declareMultiplyFunctionSS(char *out);
-char *declareMultiplyFuctionSM(char *out);
+char *declareMultiplyFunctionSM(char *out);
 
 int line_number = 0;
 FILE *out_file;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     fprintf(out_file, "%s", declareSubtractFunctionS(buffer));
     fprintf(out_file, "%s", declareMultiplyFunction(buffer));
     fprintf(out_file, "%s", declareMultiplyFunctionSS(buffer));
-    fprintf(out_file, "%s", declareMultiplyFuctionSM(buffer));
+    fprintf(out_file, "%s", declareMultiplyFunctionSM(buffer));
     fprintf(out_file, "%s", declareSqrtFunction(buffer));
     fprintf(out_file, "%s", declareTransposeFunction(buffer));
     fprintf(out_file, "%s", declareChooseFunction(buffer));

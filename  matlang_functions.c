@@ -5,10 +5,19 @@ extern struct Scalar scalars[];
 
 void error(int line);
 
+/*
+ * Function to print separation like ------------
+ * This function will be pushed to out.c
+*/
 char* printSep() {
     return "printf(\"------------\\n\");\n";
 }
 
+/*
+ * Declaration of printId function
+ * Given a matrix, this function prints every element of matrix line by line
+ * This function will be pushed to out.c
+ */
 char *declarePrintId(char *out) {
     snprintf(out, 2048, "void printId(float **variable, int row_count, int column_count){\n"
            "for(int i = 0; i < row_count; i++){\n"
@@ -26,6 +35,11 @@ char *declarePrintId(char *out) {
     return out;
 }
 
+/*
+ * Declaration of scalar printId function
+ * Simply prints scalar, if scalar is integer uses integer printing function else uses float integer function
+ * This function will be pushed to out.c
+*/
 char *declarePrintIdS(char *out) {
     snprintf(out, 2048, "void printIdS(float variable){\n"
                         "    if(fabs(variable - round(variable)) < 0.0000005) {\n"
@@ -38,6 +52,9 @@ char *declarePrintIdS(char *out) {
     return out;
 }
 
+/*
+ * Function to invoke pre declared printId function in out.c
+*/
 char* callPrintId(char* out, char* variableName, int row_count, int column_count) {
     if(row_count == 0 && column_count == 0) {
         snprintf(out, 2048, "printIdS(%s);\n", variableName);
@@ -47,39 +64,29 @@ char* callPrintId(char* out, char* variableName, int row_count, int column_count
     return out;
 }
 
-////Careful! This functions only return the sqrt value and changes the scalar value in this program.
-////After using calculateSqrt function, make sure that you also use scalarValueAssignment function.
-//char* calculateSqrt(char* out, int lineNo, char* variableName, char* sqrtName) {
-//    float value;
-//    for(int i = 0; i < 2048; i++){
-//        struct Scalar currentScalar = scalars[i];
-//        if(strcmp(currentScalar.name, variableName) == 0){
-//            value = currentScalar.value;
-//            if(value < 0){
-//                error(lineNo);
-//                return -1;
-//            }
-//            currentScalar.value = sqrtf(value);
-//            scalars[i] = currentScalar;
-//            snprintf(out, 2048, "sqrt(%s)", variableName);
-//            return out;
-//        }
-//    }
-//    error(lineNo);
-//    return -1;
-//}
-
+/*
+ * This function takes and id and three expression and creates for loop in the following structure
+ * for(float id = expr1; id < expr2; id += expr3)
+ */
 char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3) {
     snprintf(out, 2048, "for(float %s = %s; %s <= %s; %s += %s) {\n",id, expr1,id, expr2,id, expr3);
     return out;
 }
 
+/*
+ * This function creates a two for loop inside like.
+ * Structure is same as single for loop
+ */
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6) {
     snprintf(out, 2048, "for(float %s = %s; %s <= %s; %s += %s ) { \n for(float %s = %s; %s <= %s; %s += %s ) {\n",
              id1, expr1, id1, expr2, id1, expr3, id2, expr4, id2, expr5, id2, expr6);
     return out;
 }
 
+/*
+ * Declaration function for square root function.
+ * This function will be pushed to out.c
+ */
 char* declareSqrtFunction(char* out) {
     snprintf(out, 2048, "float sqrt_(float value) {\n"
                         "   return sqrtf(value);\n"
@@ -87,6 +94,11 @@ char* declareSqrtFunction(char* out) {
     return out;
 }
 
+/*
+ * Declaration function for choose function.
+ * Choose function takes 4 input and if expr is 1 returns expr2, if expr1 < returns expr3 and else returns expr4
+ * This function will be pushed to out.c
+ */
 char* declareChooseFunction(char* out) {
     snprintf(out, 2048, "float choose(float expr1, float expr2, float expr3, float expr4) {\n"
                         "    float out;\n"
@@ -102,6 +114,11 @@ char* declareChooseFunction(char* out) {
     return out;
 }
 
+/*
+ * Declaration function for choose function.
+ * Takes a matrix as an argument and transpose that matrix.
+ * This function will be pushed to out.c
+ */
 char* declareTransposeFunction(char* out) {
     snprintf(out, 2048, "float** transpose(float** arr, int row_count, int column_count) {\n"
                        "   float** outArr = (float**) calloc(column_count, sizeof(float*));\n"
@@ -115,7 +132,11 @@ char* declareTransposeFunction(char* out) {
     return out;
 }
 
-
+/*
+ * Declaration function for matrix-wise + operator.
+ * Simply add two matrix cell by cell, and returns the result matrix.
+ * This function will be pushed to out.c
+ */
 char* declareAddFunction(char* out) {
     snprintf(out, 2048, "float** add(float** arr1, float** arr2, int row_count, int column_count) {\n"
                         "    float** outArr = (float**) calloc(row_count, sizeof(float*));\n"
@@ -130,6 +151,11 @@ char* declareAddFunction(char* out) {
     return out;
 }
 
+/*
+ * Declaration function for scalar + operator.
+ * Simply add two scalar and returns the sum.
+ * This function will be pushed to out.c
+ */
 char *declareAddFunctionS(char *out) {
     snprintf(out, 2048, "float addS(float val1, float val2) {\n"
                         "    return val1 + val2;\n"
@@ -137,6 +163,11 @@ char *declareAddFunctionS(char *out) {
     return out;
 }
 
+/*
+ * Declaration function for matrix-wise - operator.
+ * Simply subtract two matrix cell by cell, and returns the result matrix.
+ * This function will be pushed to out.c
+ */
 char* declareSubtractFunction(char* out) {
     snprintf(out, 2048, "float** subtract(float** arr1, float** arr2, int row_count, int column_count) {\n"
                         "    if(row_count == 0) {\n"
@@ -157,6 +188,11 @@ char* declareSubtractFunction(char* out) {
     return out;
 }
 
+/*
+ * Declaration function for scalar - operator.
+ * Simply subtract two scalar and returns the sum.
+ * This function will be pushed to out.c
+ */
 char *declareSubtractFunctionS(char *out) {
     snprintf(out, 2048, "float subtractS(float val1, float val2) {\n"
                         "   return val1 - val2;\n"
@@ -164,6 +200,11 @@ char *declareSubtractFunctionS(char *out) {
     return out;
 }
 
+/*
+ * Declaration function for matrix-matrix * operator.
+ * Simply multiply two matrix cell by cell, and returns the result matrix.
+ * This function will be pushed to out.c
+ */
 char* declareMultiplyFunction(char* out) {
     snprintf(out, 2048, "float** multiply(float** arr1, float** arr2, int row_count1, int column_count1, int row_count2, int column_count2) {\n"
                         "    float** outArr3 = (float**) calloc(row_count1, sizeof(float*));\n"
@@ -180,6 +221,11 @@ char* declareMultiplyFunction(char* out) {
     return out;
 }
 
+/*
+ * Declaration function for scalar-scalar * operator.
+ * Simply multiply two scalar and returns the sum.
+ * This function will be pushed to out.c
+ */
 char *declareMultiplyFunctionSS(char *out) {
     snprintf(out, 2048, "float multiplySS(float val1, float val2) {\n"
                         "   return val1 * val2;\n"
@@ -187,7 +233,12 @@ char *declareMultiplyFunctionSS(char *out) {
     return out;
 }
 
-char *declareMultiplyFuctionSM(char *out) {
+/*
+ * Declaration function for scalar-matrix * operator.
+ * Simply multiply every cell of the matrix with the given scalar, and returns the result matrix.
+ * This function will be pushed to out.c
+ */
+char *declareMultiplyFunctionSM(char *out) {
     snprintf(out, 2048, "float **multiplySM(float val, float **matrix, int r, int c) {\n"
                         "    float** outArr = (float**) calloc(r, sizeof(float*));\n"
                         "    for(int i = 0; i < r; i++) {\n"
@@ -201,16 +252,25 @@ char *declareMultiplyFuctionSM(char *out) {
     return out;
 }
 
+/*
+ * Function to invoke function in the out.c.
+ */
 char* callSqrt(char* out, char* variableName) {
     snprintf(out, 2048, "sqrt(%s)", variableName);
     return out;
 }
 
+/*
+ * Function to invoke function in the out.c.
+ */
 char* callChoose(char* out, char* expr1, char* expr2, char* expr3, char* expr4) {
     snprintf(out, 2048, "choose(%s, %s, %s, %s)", expr1, expr2, expr3, expr4);
     return out;
 }
 
+/*
+ * Function to invoke function in the out.c.
+ */
 char* callTranspose(char* out, char* variableName, int row_count, int column_count) {
     if(row_count == 0 && column_count == 0) {
         snprintf(out, 2048, variableName);
@@ -220,6 +280,9 @@ char* callTranspose(char* out, char* variableName, int row_count, int column_cou
     return out;
 }
 
+/*
+ * Function to invoke function in the out.c.
+ */
 char* callAdd(char* out, char* variableName1, char* variableName2, int row_count, int column_count) {
     if(row_count == 0 && column_count == 0) {
         snprintf(out, 2048, "addS(%s, %s)", variableName1, variableName2);
@@ -229,6 +292,9 @@ char* callAdd(char* out, char* variableName1, char* variableName2, int row_count
     return out;
 }
 
+/*
+ * Function to invoke function in the out.c.
+ */
 char* callSubtract(char* out, char* variableName1, char* variableName2, int row_count, int column_count) {
     if(row_count == 0 && column_count == 0) {
         snprintf(out, 2048, "subtractS(%s, %s)", variableName1, variableName2);
@@ -238,6 +304,9 @@ char* callSubtract(char* out, char* variableName1, char* variableName2, int row_
     return out;
 }
 
+/*
+ * Function to invoke function in the out.c.
+ */
 char* callMultiply(char* out, char* variableName1, char* variableName2, int row_count1, int column_count1, int row_count2, int column_count2) {
     if(row_count1 == 0 && row_count2 == 0 && column_count1 == 0 && column_count2 == 0) {
         snprintf(out, 2048, "multiplySS(%s, %s)", variableName1, variableName2);
