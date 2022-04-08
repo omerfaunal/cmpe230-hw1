@@ -122,12 +122,7 @@ char* eval(char **line, short int size) {
                 error(line_number);
             }
         } else {
-            // Matrix assignment
-            if (size < 4 || strcmp(line[1], "=") != 0) {
-                error(line_number);
-                return "error";
-            }
-            if(strcmp(line[2], "{") == 0 && strcmp(line[size - 2], "}") == 0) {
+            if(size >= 6 && strcmp(line[1], "=") == 0 && strcmp(line[2], "{") == 0 && strcmp(line[size - 2], "}") == 0) {
                 // Explicit matrix assignment, i.e. all components of a matrix are listed inside curly brackets
                 if(size < 6) {
                     error(line_number);
@@ -157,13 +152,34 @@ char* eval(char **line, short int size) {
                 return matrixAssignment(final_line, line[0], array_literal, dimensions[0], dimensions[1]);
 
             } else {
-                // Non-explicit matrix assignment
-                char *out[size - 3];
-                char* translated = NULL;
-                int *rhs_dims = typecheck(rpn(line, out, 2, size - 2), size - 3, &translated);
-                if(rhs_dims[0] == dimensions[0] && rhs_dims[1] == dimensions[1]) {
-                    char *final_line = (char*) calloc(2048, sizeof(char));
-                    return matrixAssignment(final_line, line[0], translated, dimensions[0], dimensions[1]);
+                // Non-explicit matrix assignment or indexed assignment
+                int equals_sign_location = -1;
+                for (int i = 0; i < size; i++) {
+                    if (strcmp(line[i], "=") == 0) {
+                        equals_sign_location = i;
+                        break;
+                    }
+                }
+                if (equals_sign_location == -1) {
+                    error(line_number);
+                }
+
+                char *out_lhs[equals_sign_location];
+                char *translated_lhs = NULL;
+                int *lhs_dims = typecheck(rpn(line, out_lhs, 0, equals_sign_location - 1), equals_sign_location, &translated_lhs);
+
+                char *out_rhs[size - equals_sign_location - 2];
+                char *translated_rhs = NULL;
+                int *rhs_dims = typecheck(rpn(line, out_rhs, equals_sign_location + 1, size - 2), size - equals_sign_location - 2, &translated_rhs);
+
+                if (lhs_dims[0] == rhs_dims[0] && lhs_dims[1] == rhs_dims[1]) {
+                    char *final_line = (char *) calloc(2048, sizeof(char));
+                    if(equals_sign_location == 1) {
+                        return matrixAssignment(final_line, line[0], translated_rhs, dimensions[0], dimensions[1]);
+                    } else {
+                        snprintf(final_line, 2048, "%s = %s;\n", translated_lhs, translated_rhs);
+                        return final_line;
+                    }
                 } else {
                     error(line_number);
                 }
