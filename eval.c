@@ -590,7 +590,7 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
             out_index++;
         } else if(strcmp(token, "tr") == 0 || strcmp(token, "sqrt") == 0 || strcmp(token, "choose") == 0 ||
                 (get_dimensions(token, dimensions) != NULL && i < end_index && strcmp(line[i + 1], "[") == 0)) {
-            // If the token is a function
+            // If the token is a function (this also includes a variable that is being indexed)
             *operator_stack = token;
             operator_stack++;
         } else if(strcmp(token, "*") == 0 || strcmp(token, "+") == 0 || strcmp(token, "-") == 0) {
@@ -653,7 +653,12 @@ char **rpn(char **line, char **out, short int start_index, short int end_index) 
             }
         } else if(strcmp(token, ",") == 0) {
             rpn_size--;
-            continue;
+            while(operator_stack != operator_stack_begin && (strcmp(*(operator_stack - 1), "*") == 0 || strcmp(*(operator_stack - 1), "-") == 0 ||
+            strcmp(*(operator_stack - 1), "+") == 0)) {
+                operator_stack--;
+                out[out_index] = *operator_stack;
+                out_index++;
+            }
         } else {
             error(line_number);
         }
