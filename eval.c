@@ -692,6 +692,20 @@ char **rpn(char **line, char **out, int start_index, int end_index) {
             }
         } else if(strcmp(token, ",") == 0) {
             // If the token is a comma
+            if(i == start_index || i == end_index) {
+                error(line_number);
+            }
+            if(strcmp(line[i - 1], "tr") == 0 || strcmp(line[i - 1], "sqrt") == 0 || strcmp(line[i - 1], "choose") == 0 ||
+            strcmp(line[i - 1] , "+") == 0 || strcmp(line[i - 1] , "-") == 0 || strcmp(line[i - 1], "*") == 0 ||
+            strcmp(line[i - 1], "(") == 0 || strcmp(line[i - 1], "[") == 0 || strcmp(line[i - 1], ",") == 0) {
+                error(line_number);
+            }
+            if(strcmp(line[i + 1], "+") == 0 || strcmp(line[i + 1], "-") == 0 || strcmp(line[i + 1], "*") == 0 ||
+            strcmp(line[i + 1] , ")") == 0 || strcmp(line[i + 1] , "[") == 0 || strcmp(line[i + 1], "]") == 0 ||
+            strcmp(line[i - 1], ",") == 0) {
+                error(line_number);
+            }
+
             rpn_size--;
             while(operator_stack != operator_stack_begin && (strcmp(*(operator_stack - 1), "*") == 0 || strcmp(*(operator_stack - 1), "-") == 0 ||
             strcmp(*(operator_stack - 1), "+") == 0)) {
