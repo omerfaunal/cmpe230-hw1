@@ -29,7 +29,9 @@ extern int matrix_count;
 extern struct Matrix matrices[];
 
 int main(int argc, char *argv[]) {
-
+    /*
+     * Read lines from file with file pointer
+     */
     FILE *fp;
     char line[2048];
 
@@ -48,12 +50,18 @@ int main(int argc, char *argv[]) {
     strcpy(out_file_name + strlen(argv[1]) - 3, "c");
 
     out_file = fopen(out_file_name, "w");
+    /*
+     * Raise an error if file cannot be opened.
+     */
     if(out_file == NULL) {
         printf("Cannot open out.c\n");
         return 1;
     }
 
     char *buffer = (char*) calloc(2048, sizeof(char));
+    /*
+     * Prints out.c headers and declaration functions.
+     */
     fprintf(out_file, "#include <stdio.h>\n"
                       "#include <stdlib.h>\n"
                       "#include <math.h>\n");
@@ -232,13 +240,6 @@ int main(int argc, char *argv[]) {
 
         final_line = (char**) realloc(final_line, token_ctr * sizeof(char*));
         fprintf(out_file, eval(final_line, token_ctr));
-
-        // Testing:
-//        for(int i = 0; i < token_ctr; i++) {
-//            printf(final_line[i]);
-//            printf(" ");
-//        }
-//        printf("\n");
 
         line_number++;
     }
