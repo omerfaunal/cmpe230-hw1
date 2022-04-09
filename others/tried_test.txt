@@ -16,6 +16,8 @@ Gecilen testler
 -Nested for loop
 -Yanlis sayida arguman almis fonksiyon
 -Binary operatorler arasinda islem onceligi duzgun calisiyor gibi, AMA DAHA KOMPLEKS TESTLER DENENMELI
+-Matrise index olarak skaler olmayan bisey verme
+-Indexing sirasinda yanlis sayida arguman verme
 
 Gecilemeyen testler
 YOK
