@@ -13,7 +13,7 @@ int matrix_count = 0;
 struct Scalar scalars[256];  // Scalar variables will be stored here.
 struct Scalar* scalarListPointer = scalars;//This is a pointer for traversing scalars list.
 int scalar_count = 0;
-int line_number = 0;
+int line_number = 1;
 FILE *out_file;
 char out_file_name[4096];
 
