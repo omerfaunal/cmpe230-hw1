@@ -645,6 +645,10 @@ char **rpn(char **line, char **out, int start_index, int end_index) {
             operator_stack++;
         } else if(strcmp(token, "(") == 0) {
             // If the token is a left parenthesis
+            if((i == start_index || !(strcmp(line[i - 1], "tr") == 0 || strcmp(line[i - 1], "sqrt") == 0 || strcmp(line[i - 1], "choose") == 0)) &&
+                    (i == end_index || strcmp(line[i + 1], ")") == 0)) {
+                error(line_number);
+            }
             *operator_stack = token;
             operator_stack++;
             rpn_size--;
