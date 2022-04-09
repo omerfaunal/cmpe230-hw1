@@ -196,13 +196,10 @@ char* eval(char **line, int size) {
         if(size < 12 || strcmp(line[1], "(") != 0) {
             error(line_number);
         }
-        for(int i = 0; i < 23; i++) {
-            if(strcmp(line[2], terminals[i]) == 0) {
-                error(line_number);
-            }
+        int dim[2];
+        if(get_dimensions(line[2], dim) == NULL || dim[0] != 0 || dim[1] != 0) {
+            error(line_number);
         }
-        char *temp = (char*) calloc(2048, sizeof(char));
-        declaration(temp, line[2], 0, 0);
         if(strcmp(line[3], "in") == 0) {
             // Single for loop
             for_loop_open = 1;
@@ -260,13 +257,10 @@ char* eval(char **line, int size) {
             // Double for loop
             for_loop_open = 2;
 
-            for(int i = 0; i < 23; i++) {
-                if(strcmp(line[4], terminals[i]) == 0) {
-                    error(line_number);
-                }
+            if(get_dimensions(line[4], dim) == NULL || dim[0] != 0 || dim[1] != 0) {
+                error(line_number);
             }
-            char *temp = (char*) calloc(2048, sizeof(char));
-            declaration(temp, line[4], 0, 0);
+
             if(strcmp(line[5], "in") != 0) {
                 error(line_number);
             }
@@ -374,13 +368,9 @@ char* eval(char **line, int size) {
         }
         if(for_loop_open == 1) {
             for_loop_open = 0;
-            matrix_count--;
-            matrixListPointer--;
             return "}\n";
         } else if(for_loop_open == 2) {
             for_loop_open = 0;
-            matrix_count -= 2;
-            matrixListPointer -= 2;
             return "}}\n";
         } else{
             error(line_number);
