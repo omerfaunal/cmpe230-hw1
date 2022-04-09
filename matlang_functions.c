@@ -256,7 +256,7 @@ char *declareMultiplyFunctionSM(char *out) {
  * Function to invoke function in the out.c.
  */
 char* callSqrt(char* out, char* variableName) {
-    snprintf(out, 2048, "sqrt(%s)", variableName);
+    snprintf(out, 2048, "sqrt_(%s)", variableName);
     return out;
 }
 
