@@ -27,6 +27,7 @@ extern int scalar_count;
 extern struct Scalar scalars[];
 extern int matrix_count;
 extern struct Matrix matrices[];
+extern int for_loop_open;
 
 int main(int argc, char *argv[]) {
     /*
@@ -242,6 +243,10 @@ int main(int argc, char *argv[]) {
         fprintf(out_file, "%s", eval(final_line, token_ctr));
 
         line_number++;
+    }
+
+    if(for_loop_open > 0) {
+        error(line_number - 1);
     }
 
     fprintf(out_file, "return 0;\n}\n");

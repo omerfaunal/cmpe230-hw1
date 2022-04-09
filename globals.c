@@ -16,6 +16,8 @@ int scalar_count = 0;
 int line_number = 1;
 FILE *out_file;
 char out_file_name[4096];
+int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
+                        // 2: There is a double for loop currently open.
 
 /*
  * Given a line number
