@@ -689,6 +689,8 @@ char **rpn(char **line, char **out, int start_index, int end_index) {
                 operator_stack--;
                 out[out_index] = *operator_stack;
                 out_index++;
+            } else {
+                error(line_number);
             }
         } else if(strcmp(token, ",") == 0) {
             // If the token is a comma
