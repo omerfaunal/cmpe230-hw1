@@ -102,7 +102,7 @@ char* declareSqrtFunction(char* out) {
 char* declareChooseFunction(char* out) {
     snprintf(out, 2048, "float choose(float expr1, float expr2, float expr3, float expr4) {\n"
                         "    float out;\n"
-                        "    if(expr1 == 0) {\n"
+                        "    if(fabs(expr1) < 0.0000005) {\n"
                         "        out = expr2;\n"
                         "    } else if (expr1 > 0) {\n"
                         "        out = expr3;\n"
