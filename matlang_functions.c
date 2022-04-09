@@ -310,7 +310,7 @@ char* callSubtract(char* out, char* variableName1, char* variableName2, int row_
 char* callMultiply(char* out, char* variableName1, char* variableName2, int row_count1, int column_count1, int row_count2, int column_count2) {
     if(row_count1 == 0 && row_count2 == 0 && column_count1 == 0 && column_count2 == 0) {
         snprintf(out, 2048, "multiplySS(%s, %s)", variableName1, variableName2);
-    } else if(row_count1 == 0 && row_count2 == 0) {
+    } else if(row_count1 == 0 && column_count1 == 0) {
         snprintf(out, 2048, "multiplySM(%s, %s, %d, %d)", variableName1, variableName2, row_count2, column_count2);
     } else {
         snprintf(out, 2048, "multiply(%s, %s, %d, %d, %d, %d)",
