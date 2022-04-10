@@ -29,9 +29,8 @@ extern int matrix_count;
 extern char *terminals[];
 extern struct Matrix* matrixListPointer;
 extern int tempCount;
+extern int for_loop_open;
 
-int for_loop_open = 0;  // 0: There isn't a for loop currently open; 1: There is a single for loop currently open,
-                              // 2: There is a double for loop currently open.
 
 int rpn_size;  // When an expression is being converted to postfix notation, this variable stores the number of elements
                // in the postfix expression (it is different from the number of elements in the infix notation because
@@ -197,13 +196,10 @@ char* eval(char **line, int size) {
         if(size < 12 || strcmp(line[1], "(") != 0) {
             error(line_number);
         }
-        for(int i = 0; i < 23; i++) {
-            if(strcmp(line[2], terminals[i]) == 0) {
-                error(line_number);
-            }
+        int dim[2];
+        if(get_dimensions(line[2], dim) == NULL || dim[0] != 0 || dim[1] != 0) {
+            error(line_number);
         }
-        char *temp = (char*) calloc(2048, sizeof(char));
-        declaration(temp, line[2], 0, 0);
         if(strcmp(line[3], "in") == 0) {
             // Single for loop
             for_loop_open = 1;
@@ -261,13 +257,10 @@ char* eval(char **line, int size) {
             // Double for loop
             for_loop_open = 2;
 
-            for(int i = 0; i < 23; i++) {
-                if(strcmp(line[4], terminals[i]) == 0) {
-                    error(line_number);
-                }
+            if(get_dimensions(line[4], dim) == NULL || dim[0] != 0 || dim[1] != 0) {
+                error(line_number);
             }
-            char *temp = (char*) calloc(2048, sizeof(char));
-            declaration(temp, line[4], 0, 0);
+
             if(strcmp(line[5], "in") != 0) {
                 error(line_number);
             }
@@ -375,13 +368,9 @@ char* eval(char **line, int size) {
         }
         if(for_loop_open == 1) {
             for_loop_open = 0;
-            matrix_count--;
-            matrixListPointer--;
             return "}\n";
         } else if(for_loop_open == 2) {
             for_loop_open = 0;
-            matrix_count -= 2;
-            matrixListPointer -= 2;
             return "}}\n";
         } else{
             error(line_number);
@@ -645,6 +634,10 @@ char **rpn(char **line, char **out, int start_index, int end_index) {
             operator_stack++;
         } else if(strcmp(token, "(") == 0) {
             // If the token is a left parenthesis
+            if((i == start_index || !(strcmp(line[i - 1], "tr") == 0 || strcmp(line[i - 1], "sqrt") == 0 || strcmp(line[i - 1], "choose") == 0)) &&
+                    (i == end_index || strcmp(line[i + 1], ")") == 0)) {
+                error(line_number);
+            }
             *operator_stack = token;
             operator_stack++;
             rpn_size--;
@@ -689,9 +682,25 @@ char **rpn(char **line, char **out, int start_index, int end_index) {
                 operator_stack--;
                 out[out_index] = *operator_stack;
                 out_index++;
+            } else {
+                error(line_number);
             }
         } else if(strcmp(token, ",") == 0) {
             // If the token is a comma
+            if(i == start_index || i == end_index) {
+                error(line_number);
+            }
+            if(strcmp(line[i - 1], "tr") == 0 || strcmp(line[i - 1], "sqrt") == 0 || strcmp(line[i - 1], "choose") == 0 ||
+            strcmp(line[i - 1] , "+") == 0 || strcmp(line[i - 1] , "-") == 0 || strcmp(line[i - 1], "*") == 0 ||
+            strcmp(line[i - 1], "(") == 0 || strcmp(line[i - 1], "[") == 0 || strcmp(line[i - 1], ",") == 0) {
+                error(line_number);
+            }
+            if(strcmp(line[i + 1], "+") == 0 || strcmp(line[i + 1], "-") == 0 || strcmp(line[i + 1], "*") == 0 ||
+            strcmp(line[i + 1] , ")") == 0 || strcmp(line[i + 1] , "[") == 0 || strcmp(line[i + 1], "]") == 0 ||
+            strcmp(line[i - 1], ",") == 0) {
+                error(line_number);
+            }
+
             rpn_size--;
             while(operator_stack != operator_stack_begin && (strcmp(*(operator_stack - 1), "*") == 0 || strcmp(*(operator_stack - 1), "-") == 0 ||
             strcmp(*(operator_stack - 1), "+") == 0)) {

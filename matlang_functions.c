@@ -69,7 +69,7 @@ char* callPrintId(char* out, char* variableName, int row_count, int column_count
  * for(float id = expr1; id < expr2; id += expr3)
  */
 char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3) {
-    snprintf(out, 2048, "for(float %s = %s; %s <= %s; %s += %s) {\n",id, expr1,id, expr2,id, expr3);
+    snprintf(out, 2048, "for(%s = %s; %s <= %s; %s += %s) {\n",id, expr1,id, expr2,id, expr3);
     return out;
 }
 
@@ -78,7 +78,7 @@ char* singleForLoop(char* out,char* id, char* expr1, char* expr2, char* expr3) {
  * Structure is same as single for loop
  */
 char* doubleForLoop(char* out,char* id1, char* id2, char* expr1, char* expr2, char* expr3, char* expr4, char* expr5, char* expr6) {
-    snprintf(out, 2048, "for(float %s = %s; %s <= %s; %s += %s ) { \n for(float %s = %s; %s <= %s; %s += %s ) {\n",
+    snprintf(out, 2048, "for(%s = %s; %s <= %s; %s += %s ) { \n for(%s = %s; %s <= %s; %s += %s ) {\n",
              id1, expr1, id1, expr2, id1, expr3, id2, expr4, id2, expr5, id2, expr6);
     return out;
 }
@@ -102,7 +102,7 @@ char* declareSqrtFunction(char* out) {
 char* declareChooseFunction(char* out) {
     snprintf(out, 2048, "float choose(float expr1, float expr2, float expr3, float expr4) {\n"
                         "    float out;\n"
-                        "    if(expr1 == 0) {\n"
+                        "    if(fabs(expr1) < 0.0000005) {\n"
                         "        out = expr2;\n"
                         "    } else if (expr1 > 0) {\n"
                         "        out = expr3;\n"
@@ -256,7 +256,7 @@ char *declareMultiplyFunctionSM(char *out) {
  * Function to invoke function in the out.c.
  */
 char* callSqrt(char* out, char* variableName) {
-    snprintf(out, 2048, "sqrt(%s)", variableName);
+    snprintf(out, 2048, "sqrt_(%s)", variableName);
     return out;
 }
 
@@ -310,7 +310,7 @@ char* callSubtract(char* out, char* variableName1, char* variableName2, int row_
 char* callMultiply(char* out, char* variableName1, char* variableName2, int row_count1, int column_count1, int row_count2, int column_count2) {
     if(row_count1 == 0 && row_count2 == 0 && column_count1 == 0 && column_count2 == 0) {
         snprintf(out, 2048, "multiplySS(%s, %s)", variableName1, variableName2);
-    } else if(row_count1 == 0 && row_count2 == 0) {
+    } else if(row_count1 == 0 && column_count1 == 0) {
         snprintf(out, 2048, "multiplySM(%s, %s, %d, %d)", variableName1, variableName2, row_count2, column_count2);
     } else {
         snprintf(out, 2048, "multiply(%s, %s, %d, %d, %d, %d)",

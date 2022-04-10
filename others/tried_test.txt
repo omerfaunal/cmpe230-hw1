@@ -1,9 +1,23 @@
 Gecilen testler
--Tanimlanmis bir vectoru tekrar tanimlama
--Tanimlanmis bir matrixi tekrar tanimlama
--Tanimlanmis bir scalari tekrar tanimlama
--Yanlis type kullanarak tanimlamalar
+-Herhangi bir satirin ortasinda, basinda, sonunda random whitespaceler
+
+-Assign edilmis bir vectoru tekrar assign etme
+-Assign edilmis bir matrixi tekrar assign etme
+-Assign edilmis bir scalari tekrar assign etme
+-Yanlis type kullanarak aassignmentler
+-Explicit vector/matrix assignment sirasinda curly brace'lerin icinde yanlis sayida eleman
 
 -Boyuta uymayan tanimlamalar (Matrixe yanlis boyutta girdi verme)
 -Birden fazla kez declare etme, her zaman en sondaki dogru degeri aliyor
 - *, +, -, trr(x) gibi hatalar
+-Variable ismi olmadan declaration
+-Birden fazla satira yayilmis tek declaration
+
+-Nested for loop
+-Yanlis sayida arguman almis fonksiyon
+-Binary operatorler arasinda islem onceligi duzgun calisiyor gibi, AMA DAHA KOMPLEKS TESTLER DENENMELI
+-Matrise index olarak skaler olmayan bisey verme
+-Indexing sirasinda yanlis sayida arguman verme
+
+Gecilemeyen testler
+YOK
