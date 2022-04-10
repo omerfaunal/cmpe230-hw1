@@ -17,4 +17,4 @@ globals.o: structs.h
 	gcc -c globals.c -w
 
 clean:
-	rm *.o out.exe
+	rm *.o matlang2c
